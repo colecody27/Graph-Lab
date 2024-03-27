@@ -19,42 +19,50 @@ class Graph {
                 number++;
             } else
                 letter = String.fromCharCode(letter.charCodeAt(0) + 1); 
-                
         }
         
         // Add random edge to random vertice 
-        const maxEdges = size*((size-1)/2) 
+        // const maxEdges = Math.floor(size*((size-1)/2))
+        // const maxEdges = Math.floor(size/2 )
+        const maxEdges = size -1
         for (var i = 0; i < maxEdges; i++) {
-            // Select random vertice from list of vertices
-            let randomIndx1 = Math.floor(Math.random() * this.vertices.length)
-            let randomIndx2 = Math.floor(Math.random() * this.vertices.length)
-            let randomVertice = this.vertices[randomIndx1]
-            let randomEdge = this.vertices[randomIndx2]
+            // Select vertice
+            let vertice = this.vertices[i];
+
+            // Select random edge from list of vertices
+            let randomIndx = Math.floor(Math.random() * this.vertices.length);
+            let randomEdge = this.vertices[randomIndx];
 
             // Verify different indexes are selected
-            while (randomIndx1 == randomIndx2 || randomVertice.edgeNames.has(randomEdge.name)) {
-                randomIndx2 = Math.floor(Math.random() * this.vertices.length)
-                randomEdge = this.vertices[randomIndx2]
+            while (randomEdge.name === vertice.name || vertice.edgeNames.has(randomEdge.name)) {
+                randomIndx = Math.floor(Math.random() * this.vertices.length);
+                randomEdge = this.vertices[randomIndx];
             }
 
             // Add edge to vertice
-            const edge = {name: randomEdge.name, weight: Math.floor(Math.random() * maxCost)}
-            randomVertice.addEdge(edge)
+            const weight = Math.floor(Math.random() * maxCost); 
+            const verticeEdge = {name: randomEdge.name, weight: weight};
+            vertice.addEdge(verticeEdge);
+
+            // Add edge to edge
+            const edgeEdge = {name: vertice.name, weight: weight};
+            randomEdge.addEdge(edgeEdge);
         }
 
         // Set start node and goal node
-        let randomIndx1 
-        let randomIndx2
+        let randomIndx1;
+        let randomIndx2;
         do {
-            randomIndx1 = Math.floor(Math.random() * this.vertices.length)
-            randomIndx2 = Math.floor(Math.random() * this.vertices.length)
-            this.start = this.vertices[randomIndx1]
-            this.goal = this.vertices[randomIndx2]
+            randomIndx1 = Math.floor(Math.random() * this.vertices.length);
+            randomIndx2 = Math.floor(Math.random() * this.vertices.length);
+            this.start = this.vertices[randomIndx1];
+            this.goal = this.vertices[randomIndx2];
         } while (randomIndx1 == randomIndx2)
+        this.vertices[randomIndx2].heuristicCost = 0; 
     }
 
     addVertice(Vertice) {
-        this.vertices.push(Vertice)
+        this.vertices.push(Vertice);
     }
 }
 
@@ -71,7 +79,7 @@ class Vertice {
 
     addEdge(edge) {
         this.edges.push(edge);
-        this.edgeNames.add(edge.name)
+        this.edgeNames.add(edge.name);
     }
 
     getEdgeNames() {
@@ -83,9 +91,10 @@ class Vertice {
     }
 }
 
-
 // Driver
 let graph = new Graph(5, 20);
 for (var i = 0; i < graph.vertices.length; i++) {
-    console.log(graph.vertices[i])
+    console.log(graph.vertices[i]);
 }
+console.log("Start: " + graph.start.name)
+console.log("Goal: " + graph.goal.name)
