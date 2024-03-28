@@ -1,4 +1,4 @@
-class Graph {
+export class Graph {
     vertices = [];
     start;
     goal;
@@ -22,8 +22,6 @@ class Graph {
         }
         
         // Add random edge to random vertice 
-        // const maxEdges = Math.floor(size*((size-1)/2))
-        // const maxEdges = Math.floor(size/2 )
         const maxEdges = size -1
         for (var i = 0; i < maxEdges; i++) {
             // Select vertice
@@ -66,7 +64,7 @@ class Graph {
     }
 }
 
-class Vertice {
+export class Vertice {
     name;
     edgeNames = new Set([]);
     edges = [];
@@ -92,9 +90,9 @@ class Vertice {
 }
 
 // Driver
-let graph = new Graph(5, 20);
-for (var i = 0; i < graph.vertices.length; i++) {
-    console.log(graph.vertices[i]);
-}
-console.log("Start: " + graph.start.name)
-console.log("Goal: " + graph.goal.name)
+// let graph = new Graph(5, 20);
+// for (var i = 0; i < graph.vertices.length; i++) {
+//     console.log(graph.vertices[i]);
+// }
+// console.log("Start: " + graph.start.name)
+// console.log("Goal: " + graph.goal.name)
