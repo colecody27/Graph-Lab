@@ -30,7 +30,7 @@ export class Graph {
         }
         
         // Add random edge to random vertice 
-        const maxEdges = size -1
+        const maxEdges = size
         for (var i = 0; i < maxEdges; i++) {
             // Select vertice
             let vertice = this.vertices[i];
@@ -122,9 +122,9 @@ export class Vertice {
 }
 
 // Driver
-let graph = new Graph(5, 20);
-for (var i = 0; i < graph.vertices.length; i++) {
-    console.log(graph.vertices[i]);
-}
-console.log("Start: " + graph.start.name)
-console.log("Goal: " + graph.goal.name)
+// let graph = new Graph(5, 20);
+// for (var i = 0; i < graph.vertices.length; i++) {
+//     console.log(graph.vertices[i]);
+// }
+// console.log("Start: " + graph.start.name)
+// console.log("Goal: " + graph.goal.name)

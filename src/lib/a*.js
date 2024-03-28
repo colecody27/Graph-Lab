@@ -2,7 +2,7 @@ import {Graph} from '../lib/graph.js'
 import {PriorityQueue} from '../lib/priorityQueue.js'
 
 // Create graph 
-let graph = new Graph(7, 20);
+let graph = new Graph(5, 20);
 console.log(graph.vertices);
 console.log("Start: " + graph.start.name)
 console.log("Goal: " + graph.goal.name)
@@ -32,14 +32,19 @@ while (!pQueue.isEmpty()) {
     // Add children
     for (var i = 0; i < vertice.edges.length; i++) {
         let edge = vertice.edges[i]; 
-        let totalWeight = edge.weight + curr.weight + graph.getVertice(edge.name).heuristicCost; 
+        let totalWeight; 
+        if (curr.name == graph.start.name)
+            totalWeight = edge.weight + curr.weight + graph.getVertice(edge.name).heuristicCost; 
+        else
+            totalWeight = edge.weight + curr.weight + graph.getVertice(edge.name).heuristicCost - graph.getVertice(curr.name).heuristicCost;
 
         if (!visited.has(edge.name)) {
             // Update weight if found and current weight is less than previous
             let prevElement = pQueue.getElement(edge.name)
-            if (prevElement && prevElement.weight > totalWeight)
-                pQueue.updateWeight(edge.name, totalWeight); 
-            else 
+            if (prevElement){
+                if (prevElement.weight > totalWeight)
+                    pQueue.updateWeight(edge.name, totalWeight); 
+            } else
                 pQueue.enqueue(edge.name, totalWeight); 
         }
     }
