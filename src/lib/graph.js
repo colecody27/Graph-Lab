@@ -62,6 +62,10 @@ export class Graph {
     addVertice(Vertice) {
         this.vertices.push(Vertice);
     }
+
+    getVertice(name) {
+        return this.vertices.find((v) => {if (v.name === name) return v})
+    }
 }
 
 export class Vertice {

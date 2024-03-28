@@ -1,7 +1,7 @@
 import {Graph} from '../lib/graph.js'
 import {Vertice} from '../lib/graph.js'
 
-let graph = new Graph(5, 20)
+let graph = new Graph(7, 20)
 let queue = []
 let visited = new Set()
 
