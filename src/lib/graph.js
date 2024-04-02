@@ -84,6 +84,14 @@ export class Graph {
         return this.vertices.find((v) => {if (v.name === name) return v})
     }
 
+    updateParent(name, parent) {
+        for (var i = 0; i < this.vertices.length; i++) {
+            let v = this.vertices[i]; 
+            if (v.name == name)
+                v.parent = parent;
+        }
+    }
+
     isLocationClear(x, y) {
         for (var i = 0; i < this.vertices.length; i++) {
             let v = this.vertices[i]; 
@@ -100,9 +108,11 @@ export class Vertice {
     edgeNames = new Set([]);
     edges = [];
 
+
     constructor(name, x, y) {
         this.name = name; 
         this.heuristicCost = 0.0; 
+        this.parent = undefined;
         this.x = x;
         this.y = y; 
     }
