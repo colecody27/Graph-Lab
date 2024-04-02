@@ -38,16 +38,21 @@ while (!pQueue.isEmpty()) {
         else
             totalWeight = edge.weight + curr.weight + graph.getVertice(edge.name).heuristicCost - graph.getVertice(curr.name).heuristicCost;
 
+        // Node hasn't been visited
         if (!visited.has(edge.name)) {
-            // Update weight if found and current weight is less than previous
+            // Update weight if found 
             let prevElement = pQueue.getElement(edge.name)
             if (prevElement){
-                if (prevElement.weight > totalWeight)
-                    pQueue.updateWeight(curr.name, totalWeight); 
+                if (prevElement.weight > totalWeight) 
+                    prevElement.parent = curr.name; 
+                    // pQueue.updateWeight(edge.name, totalWeight); 
             } else
-                pQueue.enqueue(edge.name, totalWeight); 
+            pQueue.enqueue(edge.name, totalWeight); 
+            graph.updateParent(edge.name, curr.name); 
         }
     }
     console.log(pQueue)
 }
-    
+
+console.log("Graph after: ");
+console.log(graph.vertices);
