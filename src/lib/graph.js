@@ -1,3 +1,5 @@
+import {PriorityQueue} from '../lib/priorityQueue.js'
+
 export class Graph {
     vertices = [];
     start;
@@ -101,6 +103,61 @@ export class Graph {
         }
         return true;
     }
+
+    aStar() {
+        // Create queue with starter node
+        let pQueue = new PriorityQueue();
+        pQueue.enqueue(this.start.name, 0);
+
+        // Create list of visited nodes 
+        let visited = new Set();
+        let path = [];
+
+        // While queue isn't empty, visit node, add children to queue with weight of (parent + theirs )
+        while (!pQueue.isEmpty()) {
+            // Visit node and update visited
+            let curr = pQueue.dequeue(); 
+            visited.add(curr.name); 
+
+            // Goal node has been found. Get path. 
+            if (curr.name == this.goal.name) {
+                curr = this.getVertice(curr.name); 
+                path.push(curr.name);
+                console.log("Goal found: " + curr.name); 
+                while (curr.parent != undefined) {
+                    path.push(curr.parent);
+                    curr = this.getVertice(curr.parent);
+                }
+                break;
+            }
+
+            let vertice = this.getVertice(curr.name);
+            console.log(vertice);
+
+            // Add children
+            for (var i = 0; i < vertice.edges.length; i++) {
+                let edge = vertice.edges[i]; 
+                let totalWeight; 
+                if (curr.name == this.start.name)
+                    totalWeight = edge.weight + curr.weight + this.getVertice(edge.name).heuristicCost; 
+                else
+                    totalWeight = edge.weight + curr.weight + this.getVertice(edge.name).heuristicCost - this.getVertice(curr.name).heuristicCost;
+
+                // Node hasn't been visited
+                if (!visited.has(edge.name)) {
+                    // Update weight if found 
+                    let prevElement = pQueue.getElement(edge.name)
+                    if (prevElement){
+                        if (prevElement.weight > totalWeight) 
+                            prevElement.parent = curr.name; 
+                    } else
+                    pQueue.enqueue(edge.name, totalWeight); 
+                    this.updateParent(edge.name, curr.name); 
+                }
+            }
+        }
+        return path;
+    }
 }
 
 export class Vertice {
@@ -132,9 +189,12 @@ export class Vertice {
 }
 
 // Driver
-// let graph = new Graph(5, 20);
-// for (var i = 0; i < graph.vertices.length; i++) {
-//     console.log(graph.vertices[i]);
-// }
-// console.log("Start: " + graph.start.name)
-// console.log("Goal: " + graph.goal.name)
+let graph = new Graph(5, 20);
+for (var i = 0; i < graph.vertices.length; i++) {
+    console.log(graph.vertices[i]);
+}
+console.log("Start: " + graph.start.name)
+console.log("Goal: " + graph.goal.name)
+
+let path = graph.aStar();
+console.log("Path: " + path); 

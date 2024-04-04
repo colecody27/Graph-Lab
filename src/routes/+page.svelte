@@ -1,15 +1,15 @@
-<!-- YOU CAN DELETE EVERYTHING IN THIS PAGE -->
+<script>
+	import {Graph} from '$lib/graph.js'
 
-<div class="container h-full mx-auto flex justify-center items-center">
-	<div class="space-y-5">
-		<h1 class="h1">Let's get cracking bones!</h1>
-		<p>Start by exploring:</p>
-		<ul>
-			<li><code class="code">/src/routes/+layout.svelte</code> - barebones layout</li>
-			<li><code class="code">/src/app.postcss</code> - app wide css</li>
-			<li>
-				<code class="code">/src/routes/+page.svelte</code> - this page, you can replace the contents
-			</li>
-		</ul>
-	</div>
+	let graph = new Graph(5, 20); 
+	let x = 100; 
+	let y = graph.vertices[0].y;
+	console.log(y)
+	// let fg = `${y}px`
+</script>
+
+<div class = 'relative bg-white h-screen w-screen' >
+	{#each graph.vertices as v}
+		<div class = 'h-10 w-10 bg-black absolute bottom-[{y}px] left-[{x}px]'> {v.name}</div>
+	{/each}
 </div>

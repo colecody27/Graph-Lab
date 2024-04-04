@@ -13,6 +13,7 @@ pQueue.enqueue(graph.start.name, 0);
 
 // Create list of visited nodes 
 let visited = new Set();
+let path = [];
 
 // While queue isn't empty, visit node, add children to queue with weight of (parent + theirs )
 while (!pQueue.isEmpty()) {
@@ -20,9 +21,15 @@ while (!pQueue.isEmpty()) {
     let curr = pQueue.dequeue(); 
     visited.add(curr.name); 
 
-    // Goal node has been found
+    // Goal node has been found. Get path. 
     if (curr.name == graph.goal.name) {
+        curr = graph.getVertice(curr.name); 
+        path.push(curr.name);
         console.log("Goal found: " + curr.name); 
+        while (curr.parent != undefined) {
+            path.push(curr.parent);
+            curr = graph.getVertice(curr.parent);
+        }
         break;
     }
 
@@ -45,7 +52,6 @@ while (!pQueue.isEmpty()) {
             if (prevElement){
                 if (prevElement.weight > totalWeight) 
                     prevElement.parent = curr.name; 
-                    // pQueue.updateWeight(edge.name, totalWeight); 
             } else
             pQueue.enqueue(edge.name, totalWeight); 
             graph.updateParent(edge.name, curr.name); 
@@ -56,3 +62,4 @@ while (!pQueue.isEmpty()) {
 
 console.log("Graph after: ");
 console.log(graph.vertices);
+console.log("Path: " + path);
