@@ -189,12 +189,12 @@ export class Vertice {
 }
 
 // Driver
-let graph = new Graph(5, 20);
-for (var i = 0; i < graph.vertices.length; i++) {
-    console.log(graph.vertices[i]);
-}
-console.log("Start: " + graph.start.name)
-console.log("Goal: " + graph.goal.name)
+// let graph = new Graph(5, 20);
+// for (var i = 0; i < graph.vertices.length; i++) {
+//     console.log(graph.vertices[i]);
+// }
+// console.log("Start: " + graph.start.name)
+// console.log("Goal: " + graph.goal.name)
 
-let path = graph.aStar();
-console.log("Path: " + path); 
+// let path = graph.aStar();
+// console.log("Path: " + path); 
