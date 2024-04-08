@@ -73,7 +73,7 @@ export class Graph {
             let v = this.vertices[i]; 
             if (v.name == this.goal.name)
                 continue;
-            v.heuristicCost = Math.sqrt(( (Math.abs(v.x - this.goal.x))^2 + (Math.abs(v.y - this.goal.y)^2)));
+            v.heuristicCost = Number(Math.sqrt(( (Math.abs(v.x - this.goal.x))^2 + (Math.abs(v.y - this.goal.y)^2))).toFixed(2));
         }
     }
 
@@ -112,6 +112,8 @@ export class Graph {
         // Create list of visited nodes 
         let visited = new Set();
         let path = [];
+        let steps = [];
+        steps.push({visited: [], frontier: {name: graph.start.name, weight: graph.start.name}});
 
         // While queue isn't empty, visit node, add children to queue with weight of (parent + theirs )
         while (!pQueue.isEmpty()) {
@@ -155,8 +157,84 @@ export class Graph {
                     this.updateParent(edge.name, curr.name); 
                 }
             }
+            // Copy visited and frontier into steps
+            let visitedCopy = [];
+            let frontierCopy = []; 
+
+            visited.forEach((node) => {
+                visitedCopy.push(node);
+            })
+            for (var i = 0; i < pQueue.items.length; i++) {
+                frontierCopy.push(pQueue.items[i]);
+            }
+            steps.push({visited: visitedCopy, frontier: frontierCopy}); 
         }
-        return path;
+        return {steps: steps, path: path};
+    }
+
+    bfs() {
+        let queue = [];
+        let visited = new Set();
+        let steps = []; 
+
+        // Start BFS at start vertice
+        queue.push(this.start); 
+        steps.push({visited: [], frontier: [this.start]}); 
+        while(queue.length > 0) {
+            let curr = queue.shift();
+            visited.add(curr.name);
+
+            curr.edgeNames.forEach((edgeName) => {
+                if (!queue.includes((v) => {v.name === edgeName}) && !visited.has(edgeName)) {
+                    queue.push(this.vertices.find((v) => {if (v.name === edgeName) return v}));
+                }
+            })
+            
+            let visitedCopy = [];
+            let frontierCopy = []; 
+
+            visited.forEach((node) => {
+                visitedCopy.push(node);
+            })
+            for (var i = 0; i < queue.length; i++) {
+                frontierCopy.push(queue[i]);
+            }
+            steps.push({visited: visitedCopy, frontier: frontierCopy}); 
+        }
+        return steps;
+    }
+
+    dfs() {
+        let stack = []; 
+        let visited = new Set(); 
+        let steps = []; 
+
+        stack.push(this.start)
+        steps.push({visited: [], frontier: [this.start]}); 
+        while (stack.length > 0) {
+            let curr = stack.pop()
+            visited.add(curr.name)
+
+            curr.edgeNames.forEach((edgeName) => {
+                let vertex = graph.vertices.find((v) => v.name === edgeName)
+                if ( vertex && !stack.some((v) => v.name === edgeName) && !visited.has(edgeName)) {
+                    stack.push(vertex);
+                }
+            })
+
+            // Copy visited and frontier into steps
+            let visitedCopy = [];
+            let frontierCopy = []; 
+
+            visited.forEach((node) => {
+                visitedCopy.push(node);
+            })
+            for (var i = 0; i < stack.length; i++) {
+                frontierCopy.push(stack[i]);
+            }
+            steps.push({visited: visitedCopy, frontier: frontierCopy}); 
+        }
+        return steps; 
     }
 }
 
@@ -189,12 +267,31 @@ export class Vertice {
 }
 
 // Driver
-// let graph = new Graph(5, 20);
-// for (var i = 0; i < graph.vertices.length; i++) {
-//     console.log(graph.vertices[i]);
-// }
-// console.log("Start: " + graph.start.name)
-// console.log("Goal: " + graph.goal.name)
+let graph = new Graph(5, 20);
+for (var i = 0; i < graph.vertices.length; i++) {
+    console.log(graph.vertices[i]);
+}
+console.log("Start: " + graph.start.name)
+console.log("Goal: " + graph.goal.name)
 
-// let path = graph.aStar();
-// console.log("Path: " + path); 
+// A*
+// let result = graph.aStar(); 
+// console.log("Steps: "); 
+// for (var i = 0; i < result.steps.length; i++) {
+//     console.log(result.steps[i]);
+// }
+// console.log("Path: " + result.path); 
+
+// BFS 
+// let steps = graph.bfs(); 
+// console.log("Steps: "); 
+// for (var i = 0; i < steps.length; i++) {
+//     console.log(steps[i]);
+// }
+
+// DFS 
+let steps = graph.dfs(); 
+console.log("Steps: "); 
+for (var i = 0; i < steps.length; i++) {
+    console.log(steps[i]);
+}

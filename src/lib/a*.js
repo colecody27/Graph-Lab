@@ -14,6 +14,8 @@ pQueue.enqueue(graph.start.name, 0);
 // Create list of visited nodes 
 let visited = new Set();
 let path = [];
+let steps = []; 
+steps.push({visited: [], frontier: {name: graph.start.name, weight: graph.start.name}});
 
 // While queue isn't empty, visit node, add children to queue with weight of (parent + theirs )
 while (!pQueue.isEmpty()) {
@@ -57,9 +59,27 @@ while (!pQueue.isEmpty()) {
             graph.updateParent(edge.name, curr.name); 
         }
     }
-    console.log(pQueue)
+
+    // Copy visited and frontier into steps
+    let visitedCopy = [];
+    let frontierCopy = []; 
+
+    visited.forEach((node) => {
+        visitedCopy.push(node);
+    })
+    for (var i = 0; i < pQueue.items.length; i++) {
+        frontierCopy.push(pQueue.items[i]);
+    }
+    steps.push({visited: visitedCopy, frontier: frontierCopy}); 
 }
 
 console.log("Graph after: ");
 console.log(graph.vertices);
 console.log("Path: " + path);
+console.log("Start: " + graph.start.name); 
+console.log("Goal: " + graph.goal.name);
+
+console.log("Steps: "); 
+for (var i = 0; i < steps.length; i++) {
+    console.log(steps[i]);
+}
