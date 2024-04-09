@@ -51,7 +51,7 @@ export class PriorityQueue {
     }
 
     isEmpty() {
-        if (this.items.size == 0)
+        if (this.items.length == 0)
             return true;
         return false;
     }

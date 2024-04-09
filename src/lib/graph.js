@@ -73,7 +73,7 @@ export class Graph {
             let v = this.vertices[i]; 
             if (v.name == this.goal.name)
                 continue;
-            v.heuristicCost = Number(Math.sqrt(( (Math.abs(v.x - this.goal.x))^2 + (Math.abs(v.y - this.goal.y)^2))).toFixed(2));
+            v.heuristicCost = Number(Math.sqrt(( (Math.abs(v.x - this.goal.x))**2 + (Math.abs(v.y - this.goal.y)**2))).toFixed(2));
         }
     }
 
@@ -98,7 +98,7 @@ export class Graph {
         for (var i = 0; i < this.vertices.length; i++) {
             let v = this.vertices[i]; 
             // let euclideanDist = Math.sqrt((v.x - x)^2 + (v.y - y)^2);
-            let euclideanDist = Math.sqrt(( (Math.abs(v.x - x))^2 + (Math.abs(v.y - y)^2)))
+            let euclideanDist = Math.sqrt(( (Math.abs(v.x - x))**2 + (Math.abs(v.y - y)**2)))
             if (euclideanDist < 5)
                 return false;
         }
