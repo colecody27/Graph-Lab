@@ -57,6 +57,7 @@ export class Graph {
             randomEdge.addEdge(edgeEdge);
         }
 
+
         // Set start node and goal node
         let randomIndx1;
         let randomIndx2;
@@ -67,6 +68,7 @@ export class Graph {
             this.goal = this.vertices[randomIndx2];
         } while (randomIndx1 == randomIndx2)
         this.vertices[randomIndx2].heuristicCost = 0; 
+    
 
         // For each node, calculate euclidean distance from the goal node 
         for (var i = 0; i < this.vertices.length; i++) {
@@ -75,8 +77,29 @@ export class Graph {
                 continue;
             v.heuristicCost = Number(Math.sqrt(( (Math.abs(v.x - this.goal.x))**2 + (Math.abs(v.y - this.goal.y)**2))).toFixed(2));
         }
+        
+
+    }
+    
+    setStartNode(nodeName) {
+        let startVertex = this.getVertice(nodeName);
+        if (startVertex) {
+            this.start = startVertex;
+            console.log(`Start node set to: ${nodeName}`);
+        } else {
+            console.log("Node not found. Please enter a valid node name.");
+        }
     }
 
+    setGoalNode(nodeName) {
+        let goalVertex = this.getVertice(nodeName);
+        if (goalVertex) {
+            this.goal = goalVertex;
+            console.log(`Start node set to: ${nodeName}`);
+        } else {
+            console.log("Node not found. Please enter a valid node name.");
+        }
+    }
 
     addVertice(Vertice) {
         this.vertices.push(Vertice);
@@ -264,8 +287,10 @@ export class Vertice {
     }
 }
 
+
+
 // Driver
-let graph = new Graph(5, 20);
+let graph = new Graph(6, 20);
 for (var i = 0; i < graph.vertices.length; i++) {
     console.log(graph.vertices[i]);
 }
