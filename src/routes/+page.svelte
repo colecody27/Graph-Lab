@@ -4,86 +4,30 @@
   import { Table, tableMapperValues, RangeSlider } from '@skeletonlabs/skeleton';
 
   let canvas;
-  let graph;
+  let numberOfVertices = 6;
+  let cost = 20;
+  let graph = new Graph(numberOfVertices, cost);
+  let selectedAlgorithm = '0';
+
   let scale = 3;
   let heuristicTable; 
   let dfsTable, bfsTable, aStarTable; 
-  let traversal = 'a';
-  let numberOfVertices = 5;
+  let traversal = '';
   let maxNumberOfVertices = 50; 
-  let cost = 20;
+
   let maxCost = 50; 
-  let startNode = '';
-  let goalNode = '';
+  let startNode = null;
+  let goalNode = null;
+  let startName = '';
+  let goalName = '';
+
+  let graph1;
+  let visualize = false;
 
 
-  function updateStartNodeColor() {
-        const vertex = graph.vertices.find(v => v.name.toLowerCase() === startNode.toLowerCase());
-        if (vertex) {
-          vertex.color = 'darkblue'; 
-          drawGraph(); 
-        } else {
-          alert('Node not found. Please enter a valid node name.');
-        }
-    }
+
+
   
-  onMount(() => {
-    graph = new Graph(5, 20);
-
-    // Log vertices 
-    console.log("Start: " + graph.start.name)
-    console.log("Goal: " + graph.goal.name)
-    for (var i = 0; i < graph.vertices.length; i++) {
-      console.log(graph.vertices[i]);
-    }
-
-    // Get steps from algorithms
-    let dfsSteps = graph.dfs();
-    let bfsSteps = graph.bfs();
-    let aStarResult = graph.aStar();
-    let aStarSteps = aStarResult.steps;
-    let aStarPath = aStarResult.path;
-
-    drawGraph();
-
-    heuristicTable = {
-      // A list of heading labels.
-      head: ['Vertice', 'Cost'],
-      // The data visibly shown in your table body UI.
-      body: tableMapperValues(graph.vertices, ['name', 'heuristicCost']),
-      // Optional: The data returned when interactive is enabled and a row is clicked.
-      // meta: tableMapperValues(sourceData, ['position', 'name', 'symbol', 'weight']),
-    };
-
-
-    dfsTable = {
-      // A list of heading labels.
-      head: ['Visited', 'Frontier'],
-      // The data visibly shown in your table body UI.
-      body: tableMapperValues(dfsSteps, ['visited', 'frontier']),
-      // Optional: The data returned when interactive is enabled and a row is clicked.
-      // meta: tableMapperValues(sourceData, ['position', 'name', 'symbol', 'weight']),
-    };
-
-    bfsTable = {
-      // A list of heading labels.
-      head: ['Visited', 'Frontier'],
-      // The data visibly shown in your table body UI.
-      body: tableMapperValues(bfsSteps, ['visited', 'frontier']),
-      // Optional: The data returned when interactive is enabled and a row is clicked.
-      // meta: tableMapperValues(sourceData, ['position', 'name', 'symbol', 'weight']),
-    };
-
-    aStarTable = {
-      // A list of heading labels.
-      head: ['Visited', 'Frontier'],
-      // The data visibly shown in your table body UI.
-      body: tableMapperValues(aStarSteps, ['visited', 'frontier']),
-      // Optional: The data returned when interactive is enabled and a row is clicked.
-      // meta: tableMapperValues(sourceData, ['position', 'name', 'symbol', 'weight']),
-    };
-  });
-
   function drawGraph() {
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -122,6 +66,122 @@
     });
 
 }
+
+
+
+function startVisualization() {
+    visualize = true;
+}
+
+
+  $: if (visualize && selectedAlgorithm !== '0') {
+    switch (selectedAlgorithm) {
+      case '1': executeAStar(); break;
+      case '2': executeBFS(); break;
+      case '3': executeDFS(); break;
+    }
+  }
+
+  function updateNodeColor(nodeName, nodeType) {
+      let vertex = graph.getVertice(nodeName);
+      if (vertex) {
+          if (nodeType === 'start') {
+              vertex.color = 'darkblue';
+              startNode = vertex;
+              graph.setStartNode(StartNode);
+          } else if (nodeType === 'goal') {
+              goalNode = vertex;
+              vertex.color = 'yellow';
+              graph.setGoalNode(goalNode);
+           
+          }
+          drawGraph();
+      } else {
+          alert('Node not found. Please enter a valid node name.');
+      }
+  }
+
+
+  function executeAStar() {
+    let aStarResult = graph.aStar();
+    let aStarSteps = aStarResult.steps;
+    let aStarPath = aStarResult.path;
+    traversal = 'a';
+      aStarTable = {
+        // A list of heading labels.
+        head: ['Visited', 'Frontier'],
+        // The data visibly shown in your table body UI.
+        body: tableMapperValues(aStarSteps, ['visited', 'frontier']),
+        // Optional: The data returned when interactive is enabled and a row is clicked.
+        // meta: tableMapperValues(sourceData, ['position', 'name', 'symbol', 'weight']),
+      };
+
+
+    heuristicTable = {
+      // A list of heading labels.
+      head: ['Vertice', 'Cost'],
+      // The data visibly shown in your table body UI.
+      body: tableMapperValues(graph.vertices, ['name', 'heuristicCost']),
+      // Optional: The data returned when interactive is enabled and a row is clicked.
+      // meta: tableMapperValues(sourceData, ['position', 'name', 'symbol', 'weight']),
+    }
+
+  }
+
+
+
+   function executeBFS()  {
+    let bfsSteps = graph.bfs();
+    traversal = 'b';
+
+    
+    bfsTable = {
+      // A list of heading labels.
+      head: ['Visited', 'Frontier'],
+      // The data visibly shown in your table body UI.
+      body: tableMapperValues(bfsSteps, ['visited', 'frontier']),
+      // Optional: The data returned when interactive is enabled and a row is clicked.
+      // meta: tableMapperValues(sourceData, ['position', 'name', 'symbol', 'weight']),
+    };
+
+
+  }
+
+
+  function executeDFS() {
+    let dfsSteps = graph.dfs();
+
+    dfsTable = {
+      // A list of heading labels.
+      head: ['Visited', 'Frontier'],
+      // The data visibly shown in your table body UI.
+      body: tableMapperValues(dfsSteps, ['visited', 'frontier']),
+      // Optional: The data returned when interactive is enabled and a row is clicked.
+      // meta: tableMapperValues(sourceData, ['position', 'name', 'symbol', 'weight']),
+    };
+
+  }
+
+
+
+  
+  onMount(() => {
+  if (visualize && selectedAlgorithm !== '0') {
+    switch (selectedAlgorithm) {
+      case '1': executeAStar(); break;
+      case '2': executeBFS(); break;
+      case '3': executeDFS(); break;
+    }
+  }
+  
+    drawGraph();
+
+
+
+
+  });
+
+
 </script>
 
 
@@ -135,7 +195,8 @@
 <!-- Graph Parameters -->
 <div class='flex justify-center space-x-20'>
   <div class='flex'>
-    <select class="select rounded-md">
+    <select class="select rounded-md" bind:value="{selectedAlgorithm}">
+      <option value="0">None</option>
       <option value="1">A*</option>
       <option value="2">BFS</option>
       <option value="3">DFS</option>
@@ -168,10 +229,28 @@
 </div>
 
 <div  class='flex justify-center mt-5 mb-10'>
-  <input type="text" placeholder="Enter start node name" bind:value="{startNode}">
-   <button type="button" class="btn variant-filled-secondary rounded-md" on:click={updateStartNodeColor}>Enter</button>
+  <input type="text" placeholder="Start node ex(A1,b1,C1)" bind:value="{startName}" class="input-text">
+   <button type="button" class="btn variant-filled-secondary rounded-md" on:click={updateNodeColor(startName, 'start')}>Enter</button>
 
 </div>
+
+<div  class='flex justify-center mt-5 mb-10'>
+  <input type="text" placeholder="Goal node ex(B1,b1,C1)" bind:value="{goalName}" class="input-text">
+   <button type="button" class="btn variant-filled-secondary rounded-md" on:click={updateNodeColor(goalName, 'goal')}>Enter</button>
+</div>
+
+<div class='flex justify-center mt-5 mb-10'>
+  <button type="button" class="btn variant-filled-secondary rounded-md" on:click={startVisualization()}>Visualize</button>
+</div>
+
+
+<!-- Display start and goal node names -->
+<div>
+  <p>Start Node: {startName || 'None selected'}</p>
+  <p>Goal Node: {goalName || 'None selected'}</p>
+</div>
+
+
 
 
 
@@ -208,7 +287,7 @@
   <!-- Work shown table -->
   <div>
     <h2 class='h2 text-center '>Iterations</h2>
-    {#if aStarTable}
+    {#if aStarTable && visualize === true}
       {#if traversal === 'a'}
         <Table class='rounded-xl ' source={aStarTable} />  
       {:else if traversal === 'b'}
@@ -247,27 +326,14 @@ canvas {
   
 }
 
+.input-text {
+  color: black;
+  background-color: white;
+  font-weight: bold;
 
-  .table {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    width: 30%; 
-    margin: auto; 
-  }
 
-  .row.header {
-    background-color: #0000;
-  }
+}
 
-  .cell {
-    border: 1px solid black;
-    padding: 4px;
-    font-size: 12px; 
-  }
-
-  .row:not(:last-child) .cell {
-    border-bottom: none;
-  }
 
 </style>
 
