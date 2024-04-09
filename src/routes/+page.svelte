@@ -8,7 +8,7 @@
   let scale = 3;
   let heuristicTable; 
   let dfsTable, bfsTable, aStarTable; 
-  let traversal = 'b';
+  let traversal = 'a';
   
   onMount(() => {
     graph = new Graph(5, 20);
