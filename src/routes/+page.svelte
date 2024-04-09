@@ -15,6 +15,17 @@
   let maxCost = 50; 
   let startNode = '';
   let goalNode = '';
+
+
+  function updateStartNodeColor() {
+        const vertex = graph.vertices.find(v => v.name.toLowerCase() === startNode.toLowerCase());
+        if (vertex) {
+          vertex.color = 'darkblue'; 
+          drawGraph(); 
+        } else {
+          alert('Node not found. Please enter a valid node name.');
+        }
+    }
   
   onMount(() => {
     graph = new Graph(5, 20);
@@ -43,6 +54,7 @@
       // Optional: The data returned when interactive is enabled and a row is clicked.
       // meta: tableMapperValues(sourceData, ['position', 'name', 'symbol', 'weight']),
     };
+
 
     dfsTable = {
       // A list of heading labels.
@@ -109,16 +121,6 @@
       ctx.fillText(vertex.name, vertex.x * scaleX, vertex.y * scaleY + 2);
     });
 
-    function updateStartNodeColor() {
-        const vertex = graph.vertices.find(v => v.name.toLowerCase() === startNode.toLowerCase());
-        if (vertex) {
-          vertex.color = 'darkblue'; 
-          drawGraph(); 
-        } else {
-          alert('Node not found. Please enter a valid node name.');
-        }
-    };
-
 }
 </script>
 
@@ -167,7 +169,7 @@
 
 <div  class='flex justify-center mt-5 mb-10'>
   <input type="text" placeholder="Enter start node name" bind:value="{startNode}">
-   <button type="button" class="btn variant-filled-secondary rounded-md">Enter</button>
+   <button type="button" class="btn variant-filled-secondary rounded-md" on:click={updateStartNodeColor}>Enter</button>
 
 </div>
 
