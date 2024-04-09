@@ -13,6 +13,8 @@
   let maxNumberOfVertices = 50; 
   let cost = 20;
   let maxCost = 50; 
+  let startNode = '';
+  let goalNode = '';
   
   onMount(() => {
     graph = new Graph(5, 20);
@@ -73,9 +75,11 @@
   function drawGraph() {
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+    const NodeRadius = 15;
     const scaleX = canvas.width / 200; 
     const scaleY = canvas.height / 200; 
+    const FontSize = 10;
+
 
     // Draw edges
     graph.vertices.forEach(vertex => {
@@ -94,15 +98,32 @@
 
     // Draw vertices  
     graph.vertices.forEach(vertex => {
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
       ctx.beginPath();
-      ctx.arc(vertex.x * scaleX, vertex.y * scaleY, 5, 0, 2 * Math.PI);
+      ctx.arc(vertex.x * scaleX, vertex.y * scaleY, NodeRadius, 0, 2 * Math.PI);
+      ctx.fillStyle = vertex.color || "white";
       ctx.fill();
-      // Optionally adjust text positioning and scaling
-      ctx.fillText(vertex.name, vertex.x * scaleX, (vertex.y * scaleY) - 10);
+      ctx.fillStyle = "Black";
+      ctx.font = `${FontSize}px Arial`;
+      ctx.fillText(vertex.name, vertex.x * scaleX, vertex.y * scaleY + 2);
     });
+
+    function updateStartNodeColor() {
+        const vertex = graph.vertices.find(v => v.name.toLowerCase() === startNode.toLowerCase());
+        if (vertex) {
+          vertex.color = 'darkblue'; 
+          drawGraph(); 
+        } else {
+          alert('Node not found. Please enter a valid node name.');
+        }
+    };
 
 }
 </script>
+
+
+
 
 <!-- Title -->
 <header>
@@ -136,12 +157,21 @@
       </div>
     </RangeSlider>
   </div>
+  
 
 </div>
 
 <div class='flex justify-center mt-5 mb-10'>
   <button type="button" class="btn variant-filled-secondary rounded-md">Randomize</button>
 </div>
+
+<div  class='flex justify-center mt-5 mb-10'>
+  <input type="text" placeholder="Enter start node name" bind:value="{startNode}">
+   <button type="button" class="btn variant-filled-secondary rounded-md">Enter</button>
+
+</div>
+
+
 
 <!-- Canvas -->
 <!-- <div class='grid grid-cols-3' >
@@ -188,6 +218,8 @@
   </div>
 
 </div>
+
+
 
 
 
