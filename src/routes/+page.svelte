@@ -4,7 +4,7 @@
   import { Table, tableMapperValues, RangeSlider } from '@skeletonlabs/skeleton';
 
   let canvas;
-  let numberOfVertices = 6;
+  let numberOfVertices = 7;
   let cost = 20;
   let graph = new Graph(numberOfVertices, cost);
   let selectedAlgorithm = '0';
@@ -21,7 +21,6 @@
   let startName = '';
   let goalName = '';
 
-  let graph1;
   let visualize = false;
 
 
@@ -83,12 +82,12 @@ function startVisualization() {
   }
 
   function updateNodeColor(nodeName, nodeType) {
-      let vertex = graph.getVertice(nodeName);
+      let vertex = graph.getVertice(nodeName.toUpperCase());
       if (vertex) {
           if (nodeType === 'start') {
               vertex.color = 'darkblue';
               startNode = vertex;
-              graph.setStartNode(StartNode);
+              graph.setStartNode(startNode);
           } else if (nodeType === 'goal') {
               goalNode = vertex;
               vertex.color = 'yellow';
@@ -100,6 +99,9 @@ function startVisualization() {
           alert('Node not found. Please enter a valid node name.');
       }
   }
+
+
+  
 
 
   function executeAStar() {
@@ -166,18 +168,9 @@ function startVisualization() {
 
   
   onMount(() => {
-  if (visualize && selectedAlgorithm !== '0') {
-    switch (selectedAlgorithm) {
-      case '1': executeAStar(); break;
-      case '2': executeBFS(); break;
-      case '3': executeDFS(); break;
-    }
-  }
+
   
     drawGraph();
-
-
-
 
   });
 

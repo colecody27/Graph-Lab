@@ -86,9 +86,7 @@ export class Graph {
         if (startVertex) {
             this.start = startVertex;
             console.log(`Start node set to: ${nodeName}`);
-        } else {
-            console.log("Node not found. Please enter a valid node name.");
-        }
+        } 
     }
 
     setGoalNode(nodeName) {
@@ -96,9 +94,7 @@ export class Graph {
         if (goalVertex) {
             this.goal = goalVertex;
             console.log(`Start node set to: ${nodeName}`);
-        } else {
-            console.log("Node not found. Please enter a valid node name.");
-        }
+        } 
     }
 
     addVertice(Vertice) {
