@@ -1,14 +1,18 @@
 <script>
   import { onMount } from 'svelte';
   import { Graph } from '$lib/graph.js';
-  import { Table, tableMapperValues } from '@skeletonlabs/skeleton';
+  import { Table, tableMapperValues, RangeSlider } from '@skeletonlabs/skeleton';
 
   let canvas;
   let graph;
   let scale = 3;
   let heuristicTable; 
   let dfsTable, bfsTable, aStarTable; 
-  let traversal = 'b';
+  let traversal = 'a';
+  let numberOfVertices = 5;
+  let maxNumberOfVertices = 50; 
+  let cost = 20;
+  let maxCost = 50; 
   
   onMount(() => {
     graph = new Graph(5, 20);
@@ -100,10 +104,44 @@
 }
 </script>
 
+<!-- Title -->
 <header>
   <h1>Graphizer</h1>
 </header>
 
+<!-- Graph Parameters -->
+<div class='flex justify-center space-x-20'>
+  <div class='flex'>
+    <select class="select rounded-md">
+      <option value="1">A*</option>
+      <option value="2">BFS</option>
+      <option value="3">DFS</option>
+    </select>
+  </div>
+
+  <div class='flex '>
+    <RangeSlider name="range-slider" bind:value={numberOfVertices} max={50} step={1} ticked>
+      <div class="flex justify-between items-center">
+        <div class="font-bold">Vertices</div>
+        <div class="text-xs">{numberOfVertices} / {maxNumberOfVertices}</div>
+      </div>
+    </RangeSlider>
+  </div>
+
+  <div class='flex'>
+    <RangeSlider name="range-slider" bind:value={cost} max={50} step={1} ticked>
+      <div class="flex justify-between items-center">
+        <div class="font-bold">Max Cost</div>
+        <div class="text-xs">{cost} / {maxCost}</div>
+      </div>
+    </RangeSlider>
+  </div>
+
+</div>
+
+<div class='flex justify-center mt-5 mb-10'>
+  <button type="button" class="btn variant-filled-secondary rounded-md">Randomize</button>
+</div>
 
 <!-- Canvas -->
 <!-- <div class='grid grid-cols-3' >
