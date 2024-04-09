@@ -97,8 +97,9 @@ export class Graph {
     isLocationClear(x, y) {
         for (var i = 0; i < this.vertices.length; i++) {
             let v = this.vertices[i]; 
-            let euclideanDist = Math.sqrt((v.x - x)^2 + (v.y - y)^2);
-            if (euclideanDist < 10)
+            // let euclideanDist = Math.sqrt((v.x - x)^2 + (v.y - y)^2);
+            let euclideanDist = Math.sqrt(( (Math.abs(v.x - x))^2 + (Math.abs(v.y - y)^2)))
+            if (euclideanDist < 5)
                 return false;
         }
         return true;
@@ -113,7 +114,7 @@ export class Graph {
         let visited = new Set();
         let path = [];
         let steps = [];
-        steps.push({visited: [], frontier: {name: graph.start.name, weight: graph.start.name}});
+        steps.push({visited: [], frontier: [`${this.start.name}(${this.start.heuristicCost}) `]});
 
         // While queue isn't empty, visit node, add children to queue with weight of (parent + theirs )
         while (!pQueue.isEmpty()) {
@@ -125,7 +126,6 @@ export class Graph {
             if (curr.name == this.goal.name) {
                 curr = this.getVertice(curr.name); 
                 path.push(curr.name);
-                console.log("Goal found: " + curr.name); 
                 while (curr.parent != undefined) {
                     path.push(curr.parent);
                     curr = this.getVertice(curr.parent);
@@ -134,7 +134,6 @@ export class Graph {
             }
 
             let vertice = this.getVertice(curr.name);
-            console.log(vertice);
 
             // Add children
             for (var i = 0; i < vertice.edges.length; i++) {
@@ -159,16 +158,21 @@ export class Graph {
             }
             // Copy visited and frontier into steps
             let visitedCopy = [];
-            let frontierCopy = []; 
+            let frontierCopy = pQueue.items.map((item) => ` ${item.name}(${item.weight})`); 
 
             visited.forEach((node) => {
                 visitedCopy.push(node);
             })
-            for (var i = 0; i < pQueue.items.length; i++) {
-                frontierCopy.push(pQueue.items[i]);
-            }
             steps.push({visited: visitedCopy, frontier: frontierCopy}); 
         }
+            // Copy visited and frontier into steps
+            let visitedCopy = [];
+            let frontierCopy = pQueue.items.map((item) => ` ${item.name}(${item.weight})`); 
+
+            visited.forEach((node) => {
+                visitedCopy.push(node);
+            })
+            steps.push({visited: visitedCopy, frontier: frontierCopy}); 
         return {steps: steps, path: path};
     }
 
@@ -179,7 +183,7 @@ export class Graph {
 
         // Start BFS at start vertice
         queue.push(this.start); 
-        steps.push({visited: [], frontier: [this.start]}); 
+        steps.push({visited: [], frontier: [this.start.name]}); 
         while(queue.length > 0) {
             let curr = queue.shift();
             visited.add(curr.name);
@@ -190,15 +194,12 @@ export class Graph {
                 }
             })
             
+            // Copy values into step
             let visitedCopy = [];
-            let frontierCopy = []; 
-
+            let frontierCopy = queue.map((item) => ` ${item.name}`); 
             visited.forEach((node) => {
-                visitedCopy.push(node);
+                visitedCopy.push(` ${node}`);
             })
-            for (var i = 0; i < queue.length; i++) {
-                frontierCopy.push(queue[i]);
-            }
             steps.push({visited: visitedCopy, frontier: frontierCopy}); 
         }
         return steps;
@@ -210,7 +211,7 @@ export class Graph {
         let steps = []; 
 
         stack.push(this.start)
-        steps.push({visited: [], frontier: [this.start]}); 
+        steps.push({visited: [], frontier: [this.start.name]}); 
         while (stack.length > 0) {
             let curr = stack.pop()
             visited.add(curr.name)
@@ -222,16 +223,13 @@ export class Graph {
                 }
             })
 
-            // Copy visited and frontier into steps
+            // Copy values into step
             let visitedCopy = [];
-            let frontierCopy = []; 
+            let frontierCopy = stack.map((item) => ` ${item.name}`); 
 
             visited.forEach((node) => {
-                visitedCopy.push(node);
+                visitedCopy.push(` ${node}`);
             })
-            for (var i = 0; i < stack.length; i++) {
-                frontierCopy.push(stack[i]);
-            }
             steps.push({visited: visitedCopy, frontier: frontierCopy}); 
         }
         return steps; 
