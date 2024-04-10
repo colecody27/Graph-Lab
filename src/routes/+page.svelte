@@ -9,7 +9,6 @@
   let graph = new Graph(numberOfVertices, cost);
   let selectedAlgorithm = '0';
 
-  let scale = 3;
   let heuristicTable; 
   let dfsTable, bfsTable, aStarTable; 
   let traversal = '';
@@ -31,7 +30,7 @@
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     const NodeRadius = 15;
-    const scaleX = canvas.width / 200; 
+    const scaleX = (canvas.width /200); 
     const scaleY = canvas.height / 200; 
     const FontSize = 10;
 
@@ -101,7 +100,8 @@ function startVisualization() {
   }
 
 
-  
+
+
 
 
   function executeAStar() {
@@ -264,7 +264,7 @@ function startVisualization() {
 
 <!-- Canvas -->
 <div class='canvas-container' id="container">
-  <canvas class='mb-10' width="800" height="400" bind:this={canvas} ></canvas>
+  <canvas class='mb-10' width="900" height="500" bind:this={canvas} ></canvas>
 </div>
 
 
