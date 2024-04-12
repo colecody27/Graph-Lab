@@ -1,5 +1,6 @@
 import {PriorityQueue} from '../lib/priorityQueue.js'
 
+
 export class Graph {
     vertices = [];
     start;
@@ -12,7 +13,7 @@ export class Graph {
         // Create random vertices with unique name. Ex: A1 | B2 and location 
         let letter = 'A';
         let number = 1; 
-        for (var i = 0; i < size; i++) {
+        for (let i = 0; i < size; i++) {
 
             // Find available coordinates
             let x, y; 
@@ -33,29 +34,27 @@ export class Graph {
         
         // Add random edge to random vertice 
         const maxEdges = size
-        for (var i = 0; i < maxEdges; i++) {
-            // Select vertice
+        for (let i = 0; i < maxEdges; i++) {
             let vertice = this.vertices[i];
-
-            // Select random edge from list of vertices
-            let randomIndx = Math.floor(Math.random() * this.vertices.length);
-            let randomEdge = this.vertices[randomIndx];
-
-            // Verify different indexes are selected
-            while (randomEdge.name === vertice.name || vertice.edgeNames.has(randomEdge.name)) {
-                randomIndx = Math.floor(Math.random() * this.vertices.length);
-                randomEdge = this.vertices[randomIndx];
+        
+            let randomIndex = Math.floor(Math.random() * this.vertices.length);
+            let randomEdge = this.vertices[randomIndex];
+        
+            // Check that the selected vertice is not the same and does not already have an edge to the randomEdge
+            while (randomEdge === vertice || vertice.edgeNames.has(randomEdge.name)) {
+                randomIndex = Math.floor(Math.random() * this.vertices.length);
+                randomEdge = this.vertices[randomIndex];
             }
-
-            // Add edge to vertice
-            const weight = Math.floor(Math.random() * maxCost); 
+        
+            const weight = Math.floor(Math.random() * maxCost);
             const verticeEdge = {name: randomEdge.name, weight: weight};
             vertice.addEdge(verticeEdge);
-
-            // Add edge to edge
+        
+            // If the graph is undirected, add an edge back from randomEdge to vertice
             const edgeEdge = {name: vertice.name, weight: weight};
             randomEdge.addEdge(edgeEdge);
         }
+        
 
 
         // Set start node and goal node
@@ -114,15 +113,9 @@ export class Graph {
     }
 
     isLocationClear(x, y) {
-        for (var i = 0; i < this.vertices.length; i++) {
-            let v = this.vertices[i]; 
-            // let euclideanDist = Math.sqrt((v.x - x)^2 + (v.y - y)^2);
-            let euclideanDist = Math.sqrt(( (Math.abs(v.x - x))**2 + (Math.abs(v.y - y)**2)))
-            if (euclideanDist < 5)
-                return false;
-        }
-        return true;
+        return !this.vertices.some(v => Math.sqrt((v.x - x) ** 2 + (v.y - y) ** 2) < 5);
     }
+    
 
     aStar() {
         // Create queue with starter node
