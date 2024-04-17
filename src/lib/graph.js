@@ -179,7 +179,7 @@ export class Graph {
         }
             // Copy visited and frontier into steps
             let visitedCopy = [];
-            let frontierCopy = pQueue.items.map((item) => ` ${item.name}(${item.weight})`); 
+            let frontierCopy = pQueue.items.map((item) => ` ${item.name}(${(item.weight).toFixed(2)})`); 
 
             visited.forEach((node) => {
                 visitedCopy.push(node);
