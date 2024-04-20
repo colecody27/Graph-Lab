@@ -9,6 +9,8 @@ export class Graph {
     constructor(size, maxCost) {
         this.size = size; 
         this.maxCost = maxCost;
+        this.previousStart = null;
+        this.previousGoal = null;
 
         // Create random vertices with unique name. Ex: A1 | B2 and location 
         let letter = 'A';
@@ -63,9 +65,10 @@ export class Graph {
         do {
             randomIndx1 = Math.floor(Math.random() * this.vertices.length);
             randomIndx2 = Math.floor(Math.random() * this.vertices.length);
-            this.start = this.vertices[randomIndx1];
-            this.goal = this.vertices[randomIndx2];
-        } while (randomIndx1 == randomIndx2)
+        } while (randomIndx1 === randomIndx2);
+        this.start = this.vertices[randomIndx1];
+        this.goal = this.vertices[randomIndx2];
+
         this.vertices[randomIndx2].heuristicCost = 0; 
     
 
@@ -80,37 +83,70 @@ export class Graph {
 
     }
     
-    setStartNode(nodeName) {
-        let startVertex = this.getVertice(nodeName);
-        if (startVertex) {
-            this.start = startVertex;
-            console.log(`Start node set to: ${nodeName}`);
-        } 
+    setStartNode(vertex) {
+        this.start = vertex;
+        console.log(`Start node set to: ${vertex.name}`);
     }
 
-    setGoalNode(nodeName) {
-        let goalVertex = this.getVertice(nodeName);
-        if (goalVertex) {
-            this.goal = goalVertex;
-            console.log(`Start node set to: ${nodeName}`);
-        } 
+    setGoalNode(vertex) {
+        this.previousGoal = vertex;
+        this.goal = vertex;
+        console.log(`Goal node set to: ${vertex.name}`);
     }
-
-    addVertice(Vertice) {
-        this.vertices.push(Vertice);
+    addVertice(vertice) {
+        // Check if a vertex with the same name already exists in the array
+        if (this.vertices.some(v => v.name === vertice.name)) {
+            console.error("Vertex with name already exists:", vertice.name);
+            return;
+        }
+        this.vertices.push(vertice);
     }
+    
 
     getVertice(name) {
-        return this.vertices.find((v) => {if (v.name === name) return v})
+        // Use find to retrieve the vertex by name
+        const vertex = this.vertices.find(v => v.name === name);
+        if (!vertex) {
+            console.error("Vertex not found for name:", name);
+            return null;
+        }
+        return vertex;
     }
+    
 
-    updateParent(name, parent) {
-        for (var i = 0; i < this.vertices.length; i++) {
-            let v = this.vertices[i]; 
-            if (v.name == name)
-                v.parent = parent;
+    updateParent(childName, parentName) {
+        if (childName === parentName) {
+            console.error("Attempted to set self as parent for node:", childName);
+            return; // Prevent self-referencing which can lead to cycles
+        }
+    
+        let current = parentName;
+        while (current) {
+            let currentNode = this.getVertice(current);
+            if (currentNode.name === childName) {
+                console.error("Cycle detected: cannot set", parentName, "as parent of", childName);
+                return; // Prevent cycle by not updating the parent
+            }
+            current = currentNode.parent; // Move to the next parent
+        }
+    
+        let childVertex = this.getVertice(childName);
+        if (childVertex) {
+            childVertex.parent = parentName;
+            console.log(`Updated parent of ${childName} to ${parentName}`);
+        } else {
+            console.error("Vertex not found for name:", childName);
         }
     }
+    resetVertices() {
+        this.vertices.forEach(vertex => {
+            vertex.parent = undefined;  
+            vertex.visited = false;     
+        });
+    }
+        
+    
+    
 
     isLocationClear(x, y) {
         return !this.vertices.some(v => Math.sqrt((v.x - x) ** 2 + (v.y - y) ** 2) < 5);
@@ -118,134 +154,133 @@ export class Graph {
     
 
     aStar() {
-        // Create queue with starter node
+        this.resetVertices(); 
         let pQueue = new PriorityQueue();
         pQueue.enqueue(this.start.name, 0);
-
-        // Create list of visited nodes 
+    
         let visited = new Set();
         let path = [];
         let steps = [];
         steps.push({visited: [], frontier: [`${this.start.name}(${this.start.heuristicCost}) `]});
-
-        // While queue isn't empty, visit node, add children to queue with weight of (parent + theirs )
+    
+        // While queue isn't empty, process nodes
         while (!pQueue.isEmpty()) {
-            // Visit node and update visited
             let curr = pQueue.dequeue(); 
             visited.add(curr.name); 
-
-            // Goal node has been found. Get path. 
+    
+            // Check if the goal node has been found
             if (curr.name == this.goal.name) {
-                curr = this.getVertice(curr.name); 
-                path.push(curr.name);
-                while (curr.parent != undefined) {
-                    path.push(curr.parent);
-                    curr = this.getVertice(curr.parent);
+                let pathNode = this.getVertice(curr.name);
+                const visitedPathNodes = new Set(); // To detect cycles in path reconstruction
+                
+                while (pathNode) {
+                    if (visitedPathNodes.has(pathNode.name)) {
+                        console.error("Detected a cycle in the path at node:", pathNode.name);
+                        break; 
+                    }
+                    visitedPathNodes.add(pathNode.name);
+                    path.push(pathNode.name);
+                    
+                    if (!pathNode.parent) break; // Properly end if no parent is defined
+                    pathNode = this.getVertice(pathNode.parent);
                 }
-                break;
+                path.reverse();  
+                break;  
             }
+    
+            let currentVertice = this.getVertice(curr.name);
+            currentVertice.edges.forEach(edge => {
+                let neighbor = this.getVertice(edge.name);
+                let totalWeight = edge.weight + curr.weight + neighbor.heuristicCost - (curr.name === this.start.name ? 0 : currentVertice.heuristicCost);
 
-            let vertice = this.getVertice(curr.name);
-
-            // Add children
-            for (var i = 0; i < vertice.edges.length; i++) {
-                let edge = vertice.edges[i]; 
-                let totalWeight; 
-                if (curr.name == this.start.name)
-                    totalWeight = edge.weight + curr.weight + this.getVertice(edge.name).heuristicCost; 
-                else
-                    totalWeight = edge.weight + curr.weight + this.getVertice(edge.name).heuristicCost - this.getVertice(curr.name).heuristicCost;
-
-                // Node hasn't been visited
-                if (!visited.has(edge.name)) {
-                    // Update weight if found 
-                    let prevElement = pQueue.getElement(edge.name)
-                    if (prevElement){
-                        if (prevElement.weight > totalWeight) 
-                            prevElement.parent = curr.name; 
-                    } else
-                    pQueue.enqueue(edge.name, totalWeight); 
-                    this.updateParent(edge.name, curr.name); 
+                // Node hasn't been visited or found a cheaper path to an already queued node
+                let prevElement = pQueue.getElement(edge.name);
+                if (!visited.has(neighbor.name)) {
+                    if (prevElement && prevElement.weight > totalWeight) {
+                        // Found a cheaper path to a node already in the queue
+                        prevElement.weight = totalWeight;
+                        prevElement.parent = curr.name;  // Update parent since a better path is found
+                    } else if (!prevElement) {
+                        // Node is not in the queue, enqueue it
+                        pQueue.enqueue(neighbor.name, totalWeight);
+                        this.updateParent(neighbor.name, curr.name);  
+                    }
                 }
-            }
-            // Copy visited and frontier into steps
-            let visitedCopy = [];
-            let frontierCopy = pQueue.items.map((item) => ` ${item.name}(${(item.weight).toFixed(2)})`); 
+            });
 
-            visited.forEach((node) => {
-                visitedCopy.push(node);
-            })
+
+    
+            // Record the current state of visited nodes and frontier
+            let visitedCopy = Array.from(visited);
+            let frontierCopy = pQueue.items.map(item => `${item.name}(${item.weight.toFixed(2)})`);
             steps.push({visited: visitedCopy, frontier: frontierCopy}); 
         }
-            // Copy visited and frontier into steps
-            let visitedCopy = [];
-            let frontierCopy = pQueue.items.map((item) => ` ${item.name}(${(item.weight).toFixed(2)})`); 
-
-            visited.forEach((node) => {
-                visitedCopy.push(node);
-            })
-            steps.push({visited: visitedCopy, frontier: frontierCopy}); 
+    
         return {steps: steps, path: path};
     }
+    
+    
+
+
 
     bfs() {
-        let queue = [];
+        let queue = [this.start]; // Initialize with start node
         let visited = new Set();
-        let steps = []; 
-
-        // Start BFS at start vertice
-        queue.push(this.start); 
-        steps.push({visited: [], frontier: [this.start.name]}); 
-        while(queue.length > 0) {
-            let curr = queue.shift();
-            visited.add(curr.name);
-
-            curr.edgeNames.forEach((edgeName) => {
-                if (!queue.includes((v) => {v.name === edgeName}) && !visited.has(edgeName)) {
-                    queue.push(this.vertices.find((v) => {if (v.name === edgeName) return v}));
-                }
-            })
-            
-            // Copy values into step
-            let visitedCopy = [];
-            let frontierCopy = queue.map((item) => ` ${item.name}`); 
-            visited.forEach((node) => {
-                visitedCopy.push(` ${node}`);
-            })
-            steps.push({visited: visitedCopy, frontier: frontierCopy}); 
+        let steps = [];
+        let path = [];
+    
+        steps.push({visited: [], frontier: [this.start.name]});
+    
+        while (queue.length > 0) {
+            let curr = queue.shift(); // Dequeue the first element
+            if (!visited.has(curr.name)) { // Check if it has not been visited
+                visited.add(curr.name); // Mark it as visited
+                path.push(curr.name);
+    
+                curr.edges.forEach((edge) => {
+                    let neighbor = this.vertices.find(v => v.name === edge.name);
+                    if (neighbor && !visited.has(neighbor.name) && !queue.some(v => v.name === neighbor.name)) {
+                        queue.push(neighbor);
+                    }
+                });
+    
+                // Copy values into step
+                let visitedCopy = Array.from(visited);
+                let frontierCopy = queue.map((item) => item.name);
+                steps.push({visited: visitedCopy, frontier: frontierCopy});
+            }
         }
-        return steps;
+    
+        return {steps: steps, path: path};
     }
+    
 
-    dfs() {
-        let stack = []; 
-        let visited = new Set(); 
-        let steps = []; 
+dfs() {
+    let stack = [this.start];
+    let visited = new Set();
+    let steps = [{visited: [], frontier: [this.start.name]}];
+    let path = [];
 
-        stack.push(this.start)
-        steps.push({visited: [], frontier: [this.start.name]}); 
-        while (stack.length > 0) {
-            let curr = stack.pop()
-            visited.add(curr.name)
+    while (stack.length > 0) {
+        let curr = stack.pop();
+        if (visited.has(curr.name)) continue;
 
-            curr.edgeNames.forEach((edgeName) => {
-                let vertex = graph.vertices.find((v) => v.name === edgeName)
-                if ( vertex && !stack.some((v) => v.name === edgeName) && !visited.has(edgeName)) {
-                    stack.push(vertex);
-                }
-            })
+        visited.add(curr.name);
+        path.push(curr.name);
+        curr.edges.forEach(edge => {
+            let neighbor = this.vertices.find(v => v.name === edge.name);
+            if (neighbor && !visited.has(neighbor.name) && !stack.includes(neighbor)) {
+                stack.push(neighbor);
+            }
+        });
 
-            // Copy values into step
-            let visitedCopy = [];
-            let frontierCopy = stack.map((item) => ` ${item.name}`); 
-
-            visited.forEach((node) => {
-                visitedCopy.push(` ${node}`);
-            })
-            steps.push({visited: visitedCopy, frontier: frontierCopy}); 
-        }
-        return steps; 
+        let visitedCopy = Array.from(visited);
+        let frontierCopy = stack.map(item => item.name);
+        steps.push({visited: visitedCopy, frontier: frontierCopy});
     }
+    return {steps: steps, path: path};
+}
+
 }
 
 export class Vertice {
