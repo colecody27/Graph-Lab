@@ -13,7 +13,7 @@
   let traversal = '';
 
 
-  let numberOfVertices =  10;
+  let numberOfVertices =  50;
   let cost = 20;
   let maxCost = 50; 
   let maxNumberOfVertices = 50; 
@@ -45,6 +45,8 @@
 
   function startVisualization() {
       visualize = true;
+      updateNodeColor(graph.start.name,'start')
+      updateNodeColor(graph.goal.name,'goal')
       selectedAlgorithm !== '0' && executeSelectedAlgorithm();
   }
 
@@ -339,8 +341,9 @@
 </div>
 
 <!-- Display Shortest Path -->
-
-<p class="shortest-path-display">Path: {$shortestPath}</p>
+<div class="display" > Path: {$shortestPath}</div>
+<div class="display"> Start Node: {graph.start.name}</div>
+<div class="display"> Goal Node: {graph.goal.name}</div>
 
 
 
@@ -394,16 +397,16 @@
     border: 1px solid #ccc; 
 }
 
-.shortest-path-display {
+.display {
     text-align: left;
     font-weight: bold;
     padding-left: 20px;
+    padding-bottom: 20px;
     font-size: 24px; 
-    margin-top: -100px;
   }
 
   @media (max-width: 768px) {
-    .shortest-path-display {
+    .display {
       padding-left: 10px; /* Less padding on smaller screens */
       font-size: 18px; /* Smaller font size for smaller screens */
     }
