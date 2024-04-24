@@ -26,6 +26,8 @@
   $: graph = new Graph(numberOfVertices, cost);
   let shortestPath = writable("");
 
+  $: console.log(graph)
+
 
 
   function handleKeyDown(event, action) {

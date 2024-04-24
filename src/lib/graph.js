@@ -35,9 +35,9 @@ export class Graph {
         }
         
         // Add random edge to random vertice 
-        const maxEdges = size
+        const maxEdges = size + 2
         for (let i = 0; i < maxEdges; i++) {
-            let vertice = this.vertices[i];
+            let vertice = this.vertices[i % size ];
         
             let randomIndex = Math.floor(Math.random() * this.vertices.length);
             let randomEdge = this.vertices[randomIndex];
