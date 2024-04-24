@@ -18,13 +18,13 @@ export class Graph {
         for (let i = 0; i < size; i++) {
 
             // Find available coordinates
-            let x, y; 
-            do{
-                x = Math.floor(Math.random() * 200);
-                y = Math.floor(Math.random() * 200);
-            } while (!this.isLocationClear(x, y))
+            // let x, y; 
+            // do{
+            //     x = Math.floor(Math.random() * 200);
+            //     y = Math.floor(Math.random() * 200);
+            // } while (!this.isLocationClear(x, y))
 
-            this.addVertice(new Vertice(letter+number, x, y));
+            this.addVertice(new Vertice(letter+number, 0, 0));
 
             // Restart letter sequence and increment number
             if (letter == 'Z') {
@@ -72,13 +72,13 @@ export class Graph {
         this.vertices[randomIndx2].heuristicCost = 0; 
     
 
-        // For each node, calculate euclidean distance from the goal node 
-        for (var i = 0; i < this.vertices.length; i++) {
-            let v = this.vertices[i]; 
-            if (v.name == this.goal.name)
-                continue;
-            v.heuristicCost = Number(Math.sqrt(( (Math.abs(v.x - this.goal.x))**2 + (Math.abs(v.y - this.goal.y)**2))).toFixed(2));
-        }
+        // // For each node, calculate euclidean distance from the goal node 
+        // for (var i = 0; i < this.vertices.length; i++) {
+        //     let v = this.vertices[i]; 
+        //     if (v.name == this.goal.name)
+        //         continue;
+        //     v.heuristicCost = Number(Math.sqrt(( (Math.abs(v.x - this.goal.x))**2 + (Math.abs(v.y - this.goal.y)**2))).toFixed(2));
+        // }
         
 
     }

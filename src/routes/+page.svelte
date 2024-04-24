@@ -7,13 +7,13 @@
 
  
   
-  let selectedAlgorithm = '0';
+  let selectedAlgorithm = '1';
   let heuristicTable; 
   let dfsTable, bfsTable, aStarTable; 
   let traversal = '';
 
 
-  let numberOfVertices =  50;
+  let numberOfVertices =  20;
   let cost = 20;
   let maxCost = 50; 
   let maxNumberOfVertices = 50; 
@@ -23,7 +23,7 @@
 
   let visualize = false;
   let cy;
-  let graph = new Graph(numberOfVertices, cost);
+  $: graph = new Graph(numberOfVertices, cost);
   let shortestPath = writable("");
 
 
@@ -50,6 +50,26 @@
       selectedAlgorithm !== '0' && executeSelectedAlgorithm();
   }
 
+  function calculateHeuristics() {
+    var goalPos = {x: graph.goal.x, y: graph.goal.y}
+    for (var i = 0; i < graph.vertices.length; i++) {
+        let v = graph.vertices[i]; 
+        if (v.name == graph.goal.name)
+            continue;
+        v.heuristicCost = Number(Math.sqrt(( (Math.abs(v.x -goalPos["x"]))**2 + (Math.abs(v.y - goalPos["y"])**2))).toFixed(2));
+    }
+  }
+
+  function setLocations() {
+    // Iterate through visual and update locations for each vertice 
+    for (var i = 0; i < graph.vertices.length; i++) {
+      var vertice = graph.vertices[i]
+      var location = cy.$id(vertice.name).position()
+      vertice.x = location["x"]
+      vertice.y = location["y"]
+    }
+  }
+
   function executeSelectedAlgorithm() {
       switch (selectedAlgorithm) {
           case '1': executeAStar(); break;
@@ -57,9 +77,6 @@
           case '3': executeDFS(); break;
       }
   }
-
-
-
 
   function updateNodeColor(nodeName, nodeType) {
     let vertex = graph.getVertice(nodeName.toUpperCase());
@@ -85,9 +102,7 @@
       graph.setGoalNode(vertex);
     }
     updateGraphVisuals(vertex.name, nodeColor);
-   
-
-}
+  }
 
 
   function updateGraphVisuals(nodeId, color) {
@@ -217,7 +232,7 @@
 
   onMount(() => {
     
-      const elements = prepareElements(graph);
+      let elements = prepareElements(graph);
       cy = cytoscape({
           container: document.getElementById('cy'),
           elements: elements,
@@ -253,15 +268,16 @@
             layout: {
               name: 'cose', //cose, circle, grid, random 
               idealEdgeLength: 100,  
-              nodeOverlap: 20,       
+              nodeOverlap: 10,       
               animate: false,       
-              padding: 10,
+              padding: 12,
               fit: true,
-            }
-
+            },
+            minZoom: .5,
       });
 
-    
+    setLocations()
+    calculateHeuristics()
   });
 
 
@@ -279,7 +295,6 @@
     <div class="control-item">
       <div class="font-bold">Choose an Algorithm:</div>
       <select id="algorithm-select" class="select rounded-md" bind:value="{selectedAlgorithm}">
-        <option value="0">None</option>
         <option value="1">A*</option>
         <option value="2">BFS</option>
         <option value="3">DFS</option>
@@ -387,7 +402,7 @@
 .main-container {
     justify-content: space-between; 
     align-items: start; 
-    height: 100vh; 
+
     padding: 10px; 
 }
 
