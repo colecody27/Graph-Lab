@@ -9,9 +9,10 @@
 	let heuristicTable;
 	let dfsTable, bfsTable, aStarTable;
 	let traversal = '';
+  let loaded = false;
 
 	let numberOfVertices = 20;
-	let cost = 20;
+	let cost = 40;
 	let maxCost = 50;
 	let maxNumberOfVertices = 50;
 
@@ -223,8 +224,10 @@
 		return elements;
 	}
 
-	onMount(() => {
-		let elements = prepareElements(graph);
+  onMount(() => {loaded = true})
+
+  $: if (loaded) {
+    let elements = prepareElements(graph);
 		cy = cytoscape({
 			container: document.getElementById('cy'),
 			elements: elements,
@@ -259,8 +262,8 @@
 			],
 			layout: {
 				name: 'cose', //cose, circle, grid, random
-				idealEdgeLength: 100,
-				nodeOverlap: 10,
+				idealEdgeLength: 150,
+				nodeOverlap: 50,
 				animate: false,
 				padding: 12,
 				fit: true
@@ -268,9 +271,10 @@
 			minZoom: 0.5
 		});
 
-		setLocations();
+    
+    setLocations();
 		calculateHeuristics();
-	});
+  }
 </script>
 
 <!-- Title and Header -->
