@@ -302,7 +302,7 @@
 
     <!-- Node Range Slider -->
 		<div class="control-item">
-			<RangeSlider name="vertex-slider" on:change={() => updateCy()} bind:value={numberOfVertices} max={50} step={1} ticked>
+			<RangeSlider name="vertex-slider" on:change={() => updateCy()} bind:value={numberOfVertices} max={50} min={5} step={1} ticked>
 				<div class="flex justify-between items-center">
 					<div class="font-bold">Vertices</div>
 					<div class="text-xs">{numberOfVertices} / {maxNumberOfVertices}</div>
