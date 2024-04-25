@@ -224,11 +224,11 @@
 		return elements;
 	}
 
-  onMount(() => {loaded = true})
+  onMount(() => {updateCy()})
 
-  $: if (loaded) {
+  function updateCy() {
     let elements = prepareElements(graph);
-		cy = cytoscape({
+    cy = cytoscape({
 			container: document.getElementById('cy'),
 			elements: elements,
 			style: [
@@ -270,11 +270,10 @@
 			},
 			minZoom: 0.5
 		});
-
-    
     setLocations();
 		calculateHeuristics();
   }
+
 </script>
 
 <!-- Title and Header -->
@@ -293,9 +292,10 @@
 				<option value="3">DFS</option>
 			</select>
 		</div>
-		<!-- Cost Range Slider -->
+
+    <!-- Node Range Slider -->
 		<div class="control-item">
-			<RangeSlider name="vertex-slider" bind:value={numberOfVertices} max={50} step={1} ticked>
+			<RangeSlider name="vertex-slider" on:change={() => updateCy()} bind:value={numberOfVertices} max={50} step={1} ticked>
 				<div class="flex justify-between items-center">
 					<div class="font-bold">Vertices</div>
 					<div class="text-xs">{numberOfVertices} / {maxNumberOfVertices}</div>
@@ -303,9 +303,9 @@
 			</RangeSlider>
 		</div>
 
-		<!-- Node Range Slider -->
+		<!-- Cost Range Slider -->
 		<div class="control-item">
-			<RangeSlider name="cost-slider" bind:value={cost} max={50} step={1} ticked>
+			<RangeSlider name="cost-slider" on:change={() => updateCy()} bind:value={cost} max={50} step={1} ticked>
 				<div class="flex justify-between items-center">
 					<div class="font-bold">Max Cost</div>
 					<div class="text-xs">{cost} / {maxCost}</div>
@@ -386,7 +386,6 @@
 	<!-- Work Shown Table -->
 	{#if aStarTable || bfsTable || dfsTable}
 		<div>
-			<h2 class="h2 text-center">Iterations</h2>
 			{#if traversal === 'a'}
 				<div style="width: 620px; margin-left: -400px;">
 					<h2 class="h2 text-center">Iterations</h2>

@@ -298,12 +298,12 @@ export class Vertice {
 }
 
 // Driver
-let graph = new Graph(6, 20);
-for (var i = 0; i < graph.vertices.length; i++) {
-	console.log(graph.vertices[i]);
-}
-console.log('Start: ' + graph.start.name);
-console.log('Goal: ' + graph.goal.name);
+// let graph = new Graph(6, 20);
+// for (var i = 0; i < graph.vertices.length; i++) {
+// 	console.log(graph.vertices[i]);
+// }
+// console.log('Start: ' + graph.start.name);
+// console.log('Goal: ' + graph.goal.name);
 
 // A*
 // let result = graph.aStar();
@@ -321,8 +321,8 @@ console.log('Goal: ' + graph.goal.name);
 // }
 
 // DFS
-let steps = graph.dfs();
-console.log('Steps: ');
-for (var i = 0; i < steps.length; i++) {
-	console.log(steps[i]);
-}
+// let steps = graph.dfs();
+// console.log('Steps: ');
+// for (var i = 0; i < steps.length; i++) {
+// 	console.log(steps[i]);
+// }
