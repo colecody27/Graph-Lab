@@ -112,6 +112,13 @@
 		}
 	}
 
+  function randomize() {
+    numberOfVertices = Math.floor(Math.random() * maxNumberOfVertices)
+    cost = Math.floor(Math.random() * maxCost)
+    graph = new Graph(numberOfVertices, cost);
+    updateCy()
+  }
+
 	function executeAStar() {
 		let aStarResult = graph.aStar();
 		let aStarSteps = aStarResult.steps;
@@ -313,8 +320,9 @@
 			</RangeSlider>
 		</div>
 
+    <!-- Randomize -->
 		<div class="flex justify-center mt-5 mb-2">
-			<button type="button" class="btn variant-filled-secondary rounded-md">Randomize</button>
+			<button type="button" on:click={()=>randomize()} class="btn variant-filled-secondary rounded-md">Randomize</button>
 		</div>
 
 		<!-- Node Configuration for Start Node -->
