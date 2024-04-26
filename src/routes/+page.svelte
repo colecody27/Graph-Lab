@@ -260,10 +260,14 @@
 				{
 					selector: 'edge',
 					style: {
-						width: 3,
+						width: 5,
 						'line-color': '#ccc',
+						'text-outline-width': 2,
+						'text-outline-color': '#fff',
 						'curve-style': 'bezier',
+						'font-size': 14,
 						label: 'data(label)'
+						
 					}
 				}
 			],
@@ -292,7 +296,7 @@
 	<div class="control-panel">
 		<!-- Algorithm Selection -->
 		<div class="control-item">
-			<div class="font-bold">Choose an Algorithm:</div>
+			<div class="font-bold">Choose an Algorithm</div>
 			<select id="algorithm-select" class="select rounded-md" bind:value={selectedAlgorithm}>
 				<option value="1">A*</option>
 				<option value="2">BFS</option>
@@ -460,8 +464,8 @@
 		display: flex;
 		align-items: center;
 		margin-top: 5px;
+		gap: 5px;
 		border-radius: 5px 0 0 5px;
-		margin-right: -1px;
 	}
 
 	.input-text {
@@ -476,7 +480,6 @@
 		padding: 10px 20px;
 		background-color: #007bff;
 		color: white;
-		border: none;
 		border-radius: 4px;
 		cursor: pointer;
 	}
@@ -500,9 +503,5 @@
 		font-size: 2em;
 	}
 
-	.input-text {
-		color: black;
-		background-color: white;
-		font-weight: bold;
-	}
+
 </style>
