@@ -283,6 +283,8 @@
 		});
     setLocations();
 		calculateHeuristics();
+		updateNodeColor(graph.start.name, 'start');
+		updateNodeColor(graph.goal.name, 'goal');
   }
 
 </script>
@@ -404,8 +406,10 @@
 					<Table class="rounded-xl " source={aStarTable} />
 				</div>
 			{:else if traversal === 'b'}
+			    <h2 class="h2 text-center">Iterations</h2>
 				<Table class="rounded-xl " source={bfsTable} />
 			{:else}
+			    <h2 class="h2 text-center">Iterations</h2>
 				<Table class="rounded-xl" source={dfsTable} />
 			{/if}
 		</div>
