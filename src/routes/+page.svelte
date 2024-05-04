@@ -289,12 +289,15 @@
 
 </script>
 
-<!-- Title and Header -->
-<header>
-	<h1>Graphizer</h1>
-</header>
 
 <div class="main-container">
+	<div class="graph-box">
+		<header>
+			<h1>Graphizer</h1>
+		</header>
+		<div id="cy" ></div>
+	</div>
+
 	<div class="control-panel">
 		<!-- Algorithm Selection -->
 		<div class="control-item">
@@ -306,7 +309,7 @@
 			</select>
 		</div>
 
-    <!-- Node Range Slider -->
+		<!-- Node Range Slider -->
 		<div class="control-item">
 			<RangeSlider name="vertex-slider" on:change={() => updateCy()} bind:value={numberOfVertices} max={50} min={5} step={1} ticked>
 				<div class="flex justify-between items-center">
@@ -315,7 +318,7 @@
 				</div>
 			</RangeSlider>
 		</div>
-
+	
 		<!-- Cost Range Slider -->
 		<div class="control-item">
 			<RangeSlider name="cost-slider" on:change={() => updateCy()} bind:value={cost} max={50} step={1} ticked>
@@ -325,12 +328,11 @@
 				</div>
 			</RangeSlider>
 		</div>
-
-    <!-- Randomize -->
-		<div class="flex justify-center mt-5 mb-2">
-			<button type="button" on:click={()=>randomize()} class="btn variant-filled-secondary rounded-md">Randomize</button>
+	
+		<!-- Randomize -->
+		<div class="control-item" >
+			<button  type="button" on:click={()=>randomize()} class="btn variant-filled-secondary rounded-md">Randomize</button>
 		</div>
-
 		<!-- Node Configuration for Start Node -->
 		<div class="control-item">
 			<div class="font-bold">Enter Start Node</div>
@@ -345,11 +347,11 @@
 				<button
 					type="button"
 					class="btn variant-filled-secondary rounded-md"
-					on:click={() => updateNodeColor(startName, 'start')}>Enter</button
-				>
+					on:click={() => updateNodeColor(startName, 'start')}>Enter
+				</button>
 			</div>
 		</div>
-
+	
 		<!-- Node Configuration for Goal Node -->
 		<div class="control-item">
 			<div class="font-bold">Enter Goal Node</div>
@@ -368,144 +370,164 @@
 				>
 			</div>
 		</div>
-
+	
 		<!-- Visualization Control Buttons -->
-
-		<div class="flex justify-center mt-5 mb-2">
+		<div class= "control-item">
 			<button
 				type="button"
 				class="btn variant-filled-secondary rounded-md"
-				on:click={startVisualization}>Start Visualization</button
-			>
+				on:click={startVisualization}>Start Visualization
+			</button>
 		</div>
+		
 	</div>
-	<!-- Graph Container -->
-	<div id="cy" style="width: 1000px; height: 550px;"></div>
-</div>
+	<div class = "container-2">
+		<!-- Display Shortest Path -->
+		<div class= "info-bar">Start Node: {graph.start.name}</div>
+		<div class= "info-bar">Goal Node:  {graph.goal.name}</div>
+		<div class= "info-bar">Path: {$shortestPath}</div>
 
-<!-- Display Shortest Path -->
-<div class="display">Path: {$shortestPath}</div>
-<div class="display">Start Node: {graph.start.name}</div>
-<div class="display">Goal Node: {graph.goal.name}</div>
 
-<div class="grid grid-cols-2 gap-5 m-5">
-	<!-- Heuristic Table -->
-	{#if heuristicTable && traversal === 'a'}
-		<div style="width: 300px;">
-			<h2 class="h2 text-center">Heuristic Costs</h2>
-			<Table class="rounded-xl" source={heuristicTable} />
-		</div>
-	{/if}
-
-	<!-- Work Shown Table -->
-	{#if aStarTable || bfsTable || dfsTable}
-		<div>
-			{#if traversal === 'a'}
-				<div style="width: 620px; margin-left: -400px;">
-					<h2 class="h2 text-center">Iterations</h2>
-					<Table class="rounded-xl " source={aStarTable} />
+		
+		<div class = "tables"> 
+				<div class="grid grid-cols-2 gap-5 m-5">
+					<!-- Heuristic Table -->
+					{#if heuristicTable && traversal === 'a'}
+						<div>
+							<h2 class="h2 text-center">Heuristic Costs</h2>
+							<Table class="rounded-xl" source={heuristicTable} />
+						</div>
+					{/if}
+			
+					<!-- Work Shown Table -->
+					{#if aStarTable || bfsTable || dfsTable}
+						<div>
+							{#if traversal === 'a'}
+								<div >
+									<h2 class="h2 text-center">Iterations</h2>
+									<Table class="rounded-xl " source={aStarTable} />
+								</div>
+							{:else if traversal === 'b'}
+								<h2 class="h2 text-center">Iterations</h2>
+								<Table class="rounded-xl " source={bfsTable} />
+							{:else}
+								<h2 class="h2 text-center">Iterations</h2>
+								<Table class="rounded-xl" source={dfsTable} />
+							{/if}
+						</div>
+					{/if}
 				</div>
-			{:else if traversal === 'b'}
-			    <h2 class="h2 text-center">Iterations</h2>
-				<Table class="rounded-xl " source={bfsTable} />
-			{:else}
-			    <h2 class="h2 text-center">Iterations</h2>
-				<Table class="rounded-xl" source={dfsTable} />
-			{/if}
+		
 		</div>
-	{/if}
+			
+	
+	</div>
 </div>
+
+		
+
+
+
+
+
+    
+
+	
+
+
+
+
 
 <style>
-	.main-container {
-		justify-content: space-between;
-		align-items: start;
-
-		padding: 10px;
-	}
+.main-container {
+	display: flex;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	width:100%;
+	padding: 20px;
+	
+}
 
 	#cy {
-		flex: 1;
-		height: 600px;
-		border: 1px solid #ccc;
+		border: 2px solid #ccc;
+		min-width: 950px; 
+		height: 550px;
 	}
 
-	.display {
-		text-align: left;
-		font-weight: bold;
-		padding-left: 20px;
-		padding-bottom: 20px;
-		font-size: 24px;
-	}
+.control-panel {
+	display: flex;
+	flex-direction: column;
+	min-width:500px;
+	height: 100vh;
+	justify-content: space-around;
+	flex-shrink: 0;
 
-	@media (max-width: 768px) {
-		.display {
-			padding-left: 10px; /* Less padding on smaller screens */
-			font-size: 18px; /* Smaller font size for smaller screens */
-		}
-	}
+}
 
-	.control-panel {
-		position: fixed;
-		right: 0;
-		top: 0;
-		width: 500px;
-		height: 100vh;
-		background-color: black;
-		box-shadow: -2px 0 6px rgba(0, 0, 0, 0.1);
-		display: flex;
-		flex-direction: column;
-		padding: 20px;
-	}
+.container-2 {
+	display: flex;
+	justify-content: space-between;
+	justify-content: space-around;
+	flex-direction: column;
+	flex-wrap: wrap;
+	align-content: space-between;
+	
+}
+.tables {
+	display: flex;
+	width:100%;
+}
+.info-bar {
+	font-weight: bold;
+	font-size: large;
+	
+}
 
-	.control-item {
-		margin-bottom: 20px;
-		display: flex;
-		flex-direction: column;
-	}
 
-	.input-group {
-		display: flex;
-		align-items: center;
-		margin-top: 5px;
-		gap: 5px;
-		border-radius: 5px 0 0 5px;
-	}
 
-	.input-text {
-		flex-grow: 1;
-		padding: 10px;
-		border: 1px solid #ccc;
-		border-radius: 5px;
-		margin-right: -1px;
-	}
 
-	.btn {
-		padding: 10px 20px;
-		background-color: #007bff;
-		color: white;
-		border-radius: 4px;
-		cursor: pointer;
-	}
 
-	select {
-		width: 100%;
-		padding: 10px;
-		border: 1px solid #ccc;
-		border-radius: 5px;
-		background-color: white;
-		box-shadow: none;
-		appearance: none;
-	}
 
-	header {
-		text-align: center;
-		padding: 2rem;
-		background-color: #0000;
-		margin-bottom: 0rem;
-		margin-left: -500px;
-		font-size: 2em;
-	}
 
+.input-group {
+	display: flex;
+	align-items: center;
+	margin-top: 5px;
+	gap: 5px;
+	border-radius: 5px 0 0 5px;
+}
+
+.input-text {
+	flex-grow: 1;
+	padding: 10px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	margin-right: -1px; /* Adjust or remove if causing layout issues */
+}
+
+.btn {
+	padding: 10px 20px;
+	background-color: #007bff; /* Primary interaction color */
+	color: white;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+select {
+	width: 100%;
+	padding: 10px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	background-color: white;
+	box-shadow: none;
+	appearance: none; /* Removes default styling */
+}
+
+header {
+	text-align: center;
+	padding: 2rem;
+	margin-bottom: 1rem;
+	font-size: 2em;
+}
 
 </style>
