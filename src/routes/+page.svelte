@@ -329,9 +329,9 @@
 	<div class="control-panel">
 		<div>
 			<!-- Algorithm Selection -->
-			<div class="control-item mb-10">
+			<div class="control-item mb-10 ">
 				{#if heuristicTable && traversal === 'a' && aStarTable}
-				<span class="badge variant-ghost-success">Optimal Path: {$shortestPath} </span>
+					<div class=" flex flex-wrap text-lg mb-5 rounded-lg badge variant-ghost-success">Optimal Path: {$shortestPath} </div>
 				{/if}
 				<div class="font-bold">Algorithm</div>
 				<select id="algorithm-select" class="select rounded-md" bind:value={selectedAlgorithm}>
