@@ -9,7 +9,7 @@
 	let heuristicTable;
 	let dfsTable, bfsTable, aStarTable;
 	let traversal = '';
-  let loaded = false;
+  	let loaded = false;
 
 	let numberOfVertices = 20;
 	let cost = 40;
@@ -39,9 +39,9 @@
 	}
 
 	function startVisualization() {
+		clearHighlights();
 		visualize = true;
-		updateNodeColor(graph.start.name, 'start');
-		updateNodeColor(graph.goal.name, 'goal');
+
 		selectedAlgorithm !== '0' && executeSelectedAlgorithm();
 	}
 
@@ -88,14 +88,18 @@
 		}
 		const nodeColor = nodeType === 'start' ? 'green' : 'red';
 		vertex.color = nodeColor;
-
+		const node = cy.getElementById(vertex.name);
 		if (nodeType === 'start') {
+			node.addClass('start'); 
+			node.removeClass('goal');
 			if (graph.previousStart) {
 				updateGraphVisuals(graph.previousStart.name, '#666');
 			}
 			graph.previousStart = vertex;
 			graph.setStartNode(vertex);
 		} else if (nodeType === 'goal') {
+			node.addClass('goal');
+			node.removeClass('start'); 
 			if (graph.previousGoal) {
 				updateGraphVisuals(graph.previousGoal.name, '#666');
 			}
@@ -134,9 +138,9 @@
 			body: tableMapperValues(graph.vertices, ['name', 'heuristicCost'])
 		};
 		let finalVisitedNodes = [...new Set(aStarSteps.flatMap((step) => step.visited))];
-		highlightVisitedNodes(finalVisitedNodes, () => {
-			shortestPath.set(aStarPath);
-		});
+		highlightVisitedNodes(finalVisitedNodes);
+		shortestPath.set(aStarPath);
+
 	}
 
 	function executeBFS() {
@@ -152,8 +156,9 @@
 
 		let finalVisitedNodes = [...new Set(bfsSteps.flatMap((step) => step.visited))];
 		highlightVisitedNodes(finalVisitedNodes, () => {
-			shortestPath.set(bfsPath); // Update shortest path in UI after highlighting
+			shortestPath.set(bfsPath); 
 		});
+
 	}
 
 	function executeDFS() {
@@ -169,28 +174,49 @@
 
 		let finalVisitedNodes = [...new Set(dfsSteps.flatMap((step) => step.visited))];
 		highlightVisitedNodes(finalVisitedNodes, () => {
-			shortestPath.set(dfsPath); // Update shortest path in UI after highlighting
+			shortestPath.set(dfsPath);
 		});
 	}
 
-	function highlightVisitedNodes(visitedNodes, callback) {
-		console.log('Highlighting these nodes:', visitedNodes);
-		visitedNodes.forEach((nodeName, index) => {
-			if (nodeName) {
-				setTimeout(() => {
-					console.log(`Highlighting node: ${nodeName}`);
-					const node = cy.$(`#${nodeName}`);
-					node.addClass('highlighted');
-					if (index === visitedNodes.length - 1) {
-						callback();
-					}
-					setTimeout(() => {
-						node.removeClass('highlighted');
-					}, 1000);
-				}, index * 500);
-			}
+	function clearHighlights() {
+		cy.elements().removeClass('highlighted').animate({
+			style: {
+				'background-color': '#666', 
+				'line-color': '#ccc',  
+			},
 		});
 	}
+
+
+	function highlightVisitedNodes(visitedNodes) {
+    	visitedNodes.forEach((nodeName, index) => {
+        	setTimeout(() => {
+            	const node = cy.$id(nodeName);
+            	if (node.length === 0) {
+                	console.error('Node not found:', nodeName);
+                	return;
+            	}
+            	node.animate({
+                	style: {'background-color': 'yellow'},
+                	duration: 700, 
+                	easing: 'ease-in-out',
+					'transition-duration': '200ms' 
+
+            	});
+            	node.connectedEdges().animate({
+                	style: {'line-color': 'yellow', 'width': 7}, 
+                	duration: 700,
+                	easing: 'ease-in-out',
+					'transition-duration': '200ms'
+           		});
+				 
+				updateNodeColor(graph.start.name, 'start');
+				updateNodeColor(graph.goal.name, 'goal');
+       		}, index * 1000);
+   		 });
+	}
+
+
 
 	//elements for the graph nodes and edges
 	function prepareElements(graph) {
@@ -251,13 +277,6 @@
 					}
 				},
 				{
-					selector: 'node.highlighted',
-					style: {
-						'background-color': 'yellow', // Change to a visible color when highlighted
-						'transition-duration': '0.5s'
-					}
-				},
-				{
 					selector: 'edge',
 					style: {
 						width: 5,
@@ -273,19 +292,28 @@
 			],
 			layout: {
 				name: 'cose', //cose, circle, grid, random
-				idealEdgeLength: 150,
-				nodeOverlap: 50,
+				idealEdgeLength: 100,
+				nodeOverlap: 80,
 				animate: false,
-				padding: 12,
-				fit: true
+				padding: 20,
+				fit: true,
+				randomize: false,
+				/*boundingBox: {x1: 200, y1:100, x2: 800, y2: 500}*/
+				
+				
 			},
 			minZoom: 0.5
+			
 		});
     setLocations();
-		calculateHeuristics();
-		updateNodeColor(graph.start.name, 'start');
-		updateNodeColor(graph.goal.name, 'goal');
+	calculateHeuristics();
+	updateNodeColor(graph.start.name, 'start');
+	updateNodeColor(graph.goal.name, 'goal');
+	cy.center();
+
+
   }
+  
 
 </script>
 
@@ -385,7 +413,11 @@
 		<!-- Display Shortest Path -->
 		<div class= "info-bar">Start Node: {graph.start.name}</div>
 		<div class= "info-bar">Goal Node:  {graph.goal.name}</div>
-		<div class= "info-bar">Path: {$shortestPath}</div>
+		<div class="info-bar">
+			{#if selectedAlgorithm === '1'}
+				Optimal Path: {$shortestPath}
+			{/if}
+		</div>
 
 
 		
@@ -448,16 +480,16 @@
 	
 }
 
-	#cy {
-		border: 2px solid #ccc;
-		min-width: 950px; 
-		height: 550px;
-	}
+#cy {
+	border: 2px solid #ccc;
+	min-width: 1100px; 
+	min-height: 530px;
+}
 
 .control-panel {
 	display: flex;
 	flex-direction: column;
-	min-width:500px;
+	min-width:300px;
 	height: 100vh;
 	justify-content: space-around;
 	flex-shrink: 0;
@@ -482,12 +514,6 @@
 	font-size: large;
 	
 }
-
-
-
-
-
-
 
 .input-group {
 	display: flex;
