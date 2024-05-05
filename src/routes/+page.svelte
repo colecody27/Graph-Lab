@@ -293,7 +293,7 @@
 			layout: {
 				name: 'cose', //cose, circle, grid, random
 				idealEdgeLength: 100,
-				nodeOverlap: 80,
+				nodeOverlap: 300,
 				animate: false,
 				padding: 20,
 				fit: true,
@@ -318,137 +318,144 @@
 </script>
 
 
-<div class="main-container">
+<div class="main-container grid grid-cols-2 gap-10">
 	<div class="graph-box">
 		<header>
-			<h1>Graphizer</h1>
+			<h1>Graph Lab</h1>
 		</header>
 		<div id="cy" ></div>
 	</div>
 
 	<div class="control-panel">
-		<!-- Algorithm Selection -->
-		<div class="control-item">
-			<div class="font-bold">Choose an Algorithm</div>
-			<select id="algorithm-select" class="select rounded-md" bind:value={selectedAlgorithm}>
-				<option value="1">A*</option>
-				<option value="2">BFS</option>
-				<option value="3">DFS</option>
-			</select>
-		</div>
+		<div>
+			<!-- Algorithm Selection -->
+			<div class="control-item mb-10">
+				{#if heuristicTable && traversal === 'a' && aStarTable}
+				<span class="badge variant-ghost-success">Optimal Path: {$shortestPath} </span>
+				{/if}
+				<div class="font-bold">Algorithm</div>
+				<select id="algorithm-select" class="select rounded-md" bind:value={selectedAlgorithm}>
+					<option value="1">A*</option>
+					<option value="2">BFS</option>
+					<option value="3">DFS</option>
+				</select>
+			</div>
+			<!-- Node Range Slider -->
+			<div class="control-item mb-5">
+				<RangeSlider name="vertex-slider" on:change={() => updateCy()} bind:value={numberOfVertices} max={50} min={5} step={1} ticked>
+					<div class="flex justify-between items-center">
+						<div class="font-bold">Vertices</div>
+						<div class="text-xs">{numberOfVertices} / {maxNumberOfVertices}</div>
+					</div>
+				</RangeSlider>
+			</div>
 
-		<!-- Node Range Slider -->
-		<div class="control-item">
-			<RangeSlider name="vertex-slider" on:change={() => updateCy()} bind:value={numberOfVertices} max={50} min={5} step={1} ticked>
-				<div class="flex justify-between items-center">
-					<div class="font-bold">Vertices</div>
-					<div class="text-xs">{numberOfVertices} / {maxNumberOfVertices}</div>
-				</div>
-			</RangeSlider>
+			<!-- Cost Range Slider -->
+			<div class="control-item">
+				<RangeSlider name="cost-slider" on:change={() => updateCy()} bind:value={cost} max={50} step={1} ticked>
+					<div class="flex justify-between items-center">
+						<div class="font-bold">Max Cost</div>
+						<div class="text-xs">{cost} / {maxCost}</div>
+					</div>
+				</RangeSlider>
+			</div>
 		</div>
-	
-		<!-- Cost Range Slider -->
-		<div class="control-item">
-			<RangeSlider name="cost-slider" on:change={() => updateCy()} bind:value={cost} max={50} step={1} ticked>
-				<div class="flex justify-between items-center">
-					<div class="font-bold">Max Cost</div>
-					<div class="text-xs">{cost} / {maxCost}</div>
-				</div>
-			</RangeSlider>
-		</div>
+		
 	
 		<!-- Randomize -->
-		<div class="control-item" >
-			<button  type="button" on:click={()=>randomize()} class="btn variant-filled-secondary rounded-md">Randomize</button>
-		</div>
-		<!-- Node Configuration for Start Node -->
-		<div class="control-item">
-			<div class="font-bold">Enter Start Node</div>
-			<div class="input-group">
-				<input
-					type="text"
-					placeholder="Start node ex(A1, B1, C1)"
-					bind:value={startName}
-					class="input-text"
-					on:keydown={(event) => handleKeyDown(event, submitStartNode)}
-				/>
+		<div class='flex justify-between flex-row'>
+			<div class="control-item" >
+				<button  type="button" on:click={()=>randomize()} class="btn variant-filled-secondary rounded-md">Randomize</button>
+			</div>
+				<!-- Visualization Control Buttons -->
+			<div class= "control-item">
 				<button
 					type="button"
 					class="btn variant-filled-secondary rounded-md"
-					on:click={() => updateNodeColor(startName, 'start')}>Enter
+					on:click={startVisualization}> Visualize
 				</button>
 			</div>
 		</div>
-	
-		<!-- Node Configuration for Goal Node -->
-		<div class="control-item">
-			<div class="font-bold">Enter Goal Node</div>
-			<div class="input-group">
-				<input
-					type="text"
-					placeholder="Goal node ex(B1,b1,C1)"
-					bind:value={goalName}
-					class="input-text"
-					on:keydown={(event) => handleKeyDown(event, submitGoalNode)}
-				/>
-				<button
-					type="button"
-					class="btn variant-filled-secondary rounded-md"
-					on:click={updateNodeColor(goalName, 'goal')}>Enter</button
-				>
+
+		<div>
+			<!-- Node Configuration for Start Node -->
+			<div class="control-item mb-5">
+				<div class="font-bold">Start Node: {graph.start.name}</div>
+				<div class="input-group">
+					<input
+						type="text"
+						placeholder="Start node ex(A1, B1, C1)"
+						bind:value={startName}
+						class="input-text"
+						on:keydown={(event) => handleKeyDown(event, submitStartNode)}
+					/>
+					<button
+						type="button"
+						class="btn variant-filled-secondary rounded-md"
+						on:click={() => updateNodeColor(startName, 'start')}>Enter
+					</button>
+				</div>
+			</div>
+		
+			<!-- Node Configuration for Goal Node -->
+			<div class="control-item">
+				<div class="font-bold">Goal Node: {graph.goal.name}</div>
+				<div class="input-group">
+					<input
+						type="text"
+						placeholder="Goal node ex(B1, B1, C1)"
+						bind:value={goalName}
+						class="input-text"
+						on:keydown={(event) => handleKeyDown(event, submitGoalNode)}
+					/>
+					<button
+						type="button"
+						class="btn variant-filled-secondary rounded-md"
+						on:click={updateNodeColor(goalName, 'goal')}>Enter</button
+					>
+				</div>
 			</div>
 		</div>
-	
-		<!-- Visualization Control Buttons -->
-		<div class= "control-item">
-			<button
-				type="button"
-				class="btn variant-filled-secondary rounded-md"
-				on:click={startVisualization}>Start Visualization
-			</button>
-		</div>
-		
 	</div>
+	
 	<div class = "container-2">
 		<!-- Display Shortest Path -->
-		<div class= "info-bar">Start Node: {graph.start.name}</div>
-		<div class= "info-bar">Goal Node:  {graph.goal.name}</div>
-		<div class="info-bar">
+		<!-- <div class="info-bar">
 			{#if selectedAlgorithm === '1'}
 				Optimal Path: {$shortestPath}
 			{/if}
-		</div>
+		</div> -->
+
 
 
 		
 		<div class = "tables"> 
-				<div class="grid grid-cols-2 gap-5 m-5">
-					<!-- Heuristic Table -->
-					{#if heuristicTable && traversal === 'a'}
+				<div class="grid grid-cols-2 gap-3 m-5">
+					<!-- A Table -->
+					{#if heuristicTable && traversal === 'a' && aStarTable}
 						<div>
 							<h2 class="h2 text-center">Heuristic Costs</h2>
-							<Table class="rounded-xl" source={heuristicTable} />
+							<Table class="rounded-xl max-w-72 m-auto" source={heuristicTable} />
 						</div>
-					{/if}
-			
-					<!-- Work Shown Table -->
-					{#if aStarTable || bfsTable || dfsTable}
-						<div>
-							{#if traversal === 'a'}
-								<div >
-									<h2 class="h2 text-center">Iterations</h2>
-									<Table class="rounded-xl " source={aStarTable} />
-								</div>
-							{:else if traversal === 'b'}
-								<h2 class="h2 text-center">Iterations</h2>
-								<Table class="rounded-xl " source={bfsTable} />
-							{:else}
-								<h2 class="h2 text-center">Iterations</h2>
-								<Table class="rounded-xl" source={dfsTable} />
-							{/if}
+						<div >
+							<h2 class="h2 text-center">Iterations</h2>
+							<Table class="rounded-xl " source={aStarTable} />
 						</div>
 					{/if}
 				</div>
+			
+				<!-- Work Shown Table -->
+				{#if bfsTable || dfsTable}
+					<div >
+						{#if traversal === 'b'}
+							<h2 class="h2 text-center">Iterations</h2>
+							<Table class="rounded-xl " source={bfsTable} />
+						{:else}
+							<h2 class="h2 text-center">Iterations</h2>
+							<Table class="rounded-xl" source={dfsTable} />
+						{/if}
+					</div>
+				{/if}
 		
 		</div>
 			
@@ -473,7 +480,6 @@
 <style>
 .main-container {
 	display: flex;
-	justify-content: space-between;
 	flex-wrap: wrap;
 	width:100%;
 	padding: 20px;
@@ -488,6 +494,7 @@
 
 .control-panel {
 	display: flex;
+	max-height: 600px;
 	flex-direction: column;
 	min-width:300px;
 	height: 100vh;
