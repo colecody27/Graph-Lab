@@ -21,7 +21,7 @@
 
 	let visualize = false;
 	let cy;
-	$: graph = new Graph(numberOfVertices, cost);
+	let graph = new Graph(numberOfVertices, cost);
 	let shortestPath = writable('');
 
 	function handleKeyDown(event, action) {
@@ -197,14 +197,14 @@
                 	return;
             	}
             	node.animate({
-                	style: {'background-color': 'yellow'},
+                	style: {'background-color': '#00008B'},
                 	duration: 700, 
                 	easing: 'ease-in-out',
 					'transition-duration': '200ms' 
 
             	});
             	node.connectedEdges().animate({
-                	style: {'line-color': 'yellow', 'width': 7}, 
+                	style: {'line-color': '#00008B', 'width': 7}, 
                 	duration: 700,
                 	easing: 'ease-in-out',
 					'transition-duration': '200ms'
@@ -260,6 +260,7 @@
   onMount(() => {updateCy()})
 
   function updateCy() {
+	graph = new Graph(numberOfVertices, cost);
     let elements = prepareElements(graph);
     cy = cytoscape({
 			container: document.getElementById('cy'),
@@ -318,7 +319,7 @@
 </script>
 
 
-<div class="main-container grid grid-cols-2 gap-10">
+<div class="main-container grid grid-cols-2 gap-10 place-content-center">
 	<div class="graph-box">
 		<header>
 			<h1>Graph Lab</h1>
