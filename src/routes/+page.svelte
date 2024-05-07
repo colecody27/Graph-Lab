@@ -451,7 +451,7 @@
 						{#if traversal === 'b'}
 							<h2 class="h2 text-center">Iterations</h2>
 							<Table class="rounded-xl " source={bfsTable} />
-						{:else}
+						{:else if traversal === 'd'}
 							<h2 class="h2 text-center">Iterations</h2>
 							<Table class="rounded-xl" source={dfsTable} />
 						{/if}
